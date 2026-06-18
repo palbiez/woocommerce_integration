@@ -1,0 +1,29 @@
+name: Task
+description: Konkrete Umsetzungsaufgabe erfassen
+title: "[TASK] "
+labels:
+  - "type: task"
+body:
+  - type: textarea
+    id: work
+    attributes:
+      label: Aufgabe
+      description: Was ist umzusetzen?
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of Done
+      placeholder: |
+        - [ ] Code/Dokumentation ist umgesetzt
+        - [ ] Ergebnis wurde getestet
+        - [ ] Keine Secrets wurden committed
+    validations:
+      required: true
+  - type: input
+    id: references
+    attributes:
+      label: Referenzen
+      description: Links zu APIs, Dateien oder Folge-Issues.
+

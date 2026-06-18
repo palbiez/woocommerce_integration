@@ -1,0 +1,31 @@
+name: Decision
+description: Offene Architektur- oder Fachentscheidung dokumentieren
+title: "[DECISION] "
+labels:
+  - "type: decision"
+  - "status: needs-decision"
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Entscheidung
+      description: Welche Frage muss entschieden werden?
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Optionen
+      placeholder: |
+        1. Option A
+        2. Option B
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Auswirkung
+      description: Welche Folgen hat die Entscheidung fuer Umsetzung, Betrieb oder Kosten?
+    validations:
+      required: true
+

@@ -1,0 +1,57 @@
+name: Requirement
+description: Fachliche oder technische Anforderung erfassen
+title: "[REQ] "
+labels:
+  - "type: requirement"
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Ziel
+      description: Was soll erreicht werden?
+      placeholder: Kurz und konkret beschreiben.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Kontext
+      description: Warum ist diese Anforderung wichtig?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Akzeptanzkriterien
+      description: Woran ist erkennbar, dass die Anforderung erledigt ist?
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Bereich
+      options:
+        - Etsy
+        - WooCommerce
+        - n8n
+        - Dolibarr
+        - Infrastruktur
+        - Datenmodell
+        - Betrieb
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioritaet
+      options:
+        - kritisch
+        - hoch
+        - mittel
+        - niedrig
+    validations:
+      required: true
+

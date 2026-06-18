@@ -1,0 +1,6 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Integrationsplan
+    url: https://github.com/palbiez/woocommerce_integration/blob/main/INTEGRATIONSPLAN.md
+    about: Fachlicher und technischer Gesamtplan fuer die Integration.
+
