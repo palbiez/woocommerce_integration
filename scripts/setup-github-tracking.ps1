@@ -129,6 +129,22 @@ Alle bereits lokal gespeicherten produktiven Zugangsdaten rotieren und ein Secre
 "@
     },
     @{
+        Title = "[TASK] README und Projektgrundlage erstellen"
+        Milestone = "M0 Sicherheit und Projektsetup"
+        Labels = @("type: docs", "area: infra", "priority: high")
+        Body = @"
+## Aufgabe
+Projektgrundlage dokumentieren, damit Setup, Zielbild und Betriebsannahmen nachvollziehbar sind.
+
+## Akzeptanzkriterien
+- [ ] README beschreibt Ziel der Integration
+- [ ] Lokales Setup ist dokumentiert
+- [ ] Server-/Deployment-Annahmen sind dokumentiert
+- [ ] Umgang mit Secrets ist verlinkt
+- [ ] Link zum Integrationsplan ist enthalten
+"@
+    },
+    @{
         Title = "[DECISION] Zielarchitektur ohne Docker fuer Start festlegen"
         Milestone = "M0 Sicherheit und Projektsetup"
         Labels = @("type: decision", "area: infra", "priority: high", "status: needs-decision")
@@ -238,6 +254,39 @@ OAuth 2.0 Flow fuer Etsy implementieren und Refresh Tokens sicher speichern.
 "@
     },
     @{
+        Title = "[TASK] WooCommerce REST API Zugriff testen"
+        Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
+        Labels = @("type: task", "area: woocommerce", "area: infra", "priority: high")
+        Body = @"
+## Aufgabe
+WooCommerce REST API Zugriff fuer Produkte, Varianten, Bestand und Bestellungen testen.
+
+## Akzeptanzkriterien
+- [ ] Produktliste kann gelesen werden
+- [ ] Einzelnes Produkt kann gelesen werden
+- [ ] Varianten koennen gelesen werden
+- [ ] Bestand kann gelesen werden
+- [ ] Bestellungen koennen gelesen werden
+- [ ] Authentifizierung ist ohne Klartext-Secrets im Code geloest
+"@
+    },
+    @{
+        Title = "[TASK] WooCommerce Webhooks fuer Produkt und Bestellung einrichten"
+        Milestone = "M2 Core Sync WooCommerce Etsy"
+        Labels = @("type: task", "area: woocommerce", "area: infra", "priority: high")
+        Body = @"
+## Aufgabe
+WooCommerce Webhooks fuer Produkt- und Bestellaenderungen vorbereiten.
+
+## Akzeptanzkriterien
+- [ ] Produkt geaendert Webhook ist definiert
+- [ ] Bestellung erstellt Webhook ist definiert
+- [ ] Bestellung aktualisiert Webhook ist definiert
+- [ ] Signatur-/Authentifizierungskonzept ist dokumentiert
+- [ ] Testpayloads werden geloggt
+"@
+    },
+    @{
         Title = "[TASK] Import-Preview Etsy nach WooCommerce erstellen"
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: task", "area: etsy", "area: woocommerce", "area: data-model", "priority: high")
@@ -269,6 +318,22 @@ Bestehende Etsy Produkte nach Freigabe kontrolliert in WooCommerce anlegen.
 "@
     },
     @{
+        Title = "[TASK] Etsy Kategorie Attribut und Template Mapping erstellen"
+        Milestone = "M2 Core Sync WooCommerce Etsy"
+        Labels = @("type: task", "area: etsy", "area: data-model", "priority: high")
+        Body = @"
+## Aufgabe
+Mapping fuer Etsy Kategorien, Attribute, Versandprofile und Listing-Templates definieren.
+
+## Akzeptanzkriterien
+- [ ] Kategorien der bestehenden Listings sind erfasst
+- [ ] Pflichtattribute je Kategorie sind dokumentiert
+- [ ] Versandprofile sind zugeordnet
+- [ ] Template-Regeln fuer Titel und Beschreibung sind definiert
+- [ ] Mapping ist versionierbar abgelegt
+"@
+    },
+    @{
         Title = "[TASK] Persistente Mapping-Tabelle erstellen"
         Milestone = "M2 Core Sync WooCommerce Etsy"
         Labels = @("type: task", "area: data-model", "area: etsy", "area: woocommerce", "priority: high")
@@ -296,6 +361,21 @@ WooCommerce-Aenderungen automatisch nach Etsy synchronisieren.
 - [ ] Webhooks oder periodische Jobs sind definiert
 - [ ] Doppelte Listings werden verhindert
 - [ ] Fehler werden geloggt und koennen wiederholt werden
+"@
+    },
+    @{
+        Title = "[TASK] Review-Status fuer neue Etsy Listings vorsehen"
+        Milestone = "M2 Core Sync WooCommerce Etsy"
+        Labels = @("type: task", "area: etsy", "area: woocommerce", "priority: medium")
+        Body = @"
+## Aufgabe
+Fuer neue Produkte einen kontrollierten Erstveroeffentlichungsprozess vorsehen, waehrend spaetere Aenderungen automatisch synchronisieren.
+
+## Akzeptanzkriterien
+- [ ] Neue Produkte koennen als Review erforderlich markiert werden
+- [ ] Bestehende verknuepfte Listings werden automatisch aktualisiert
+- [ ] Status ist im Mapping sichtbar
+- [ ] Fehlerhafte Erstveroeffentlichungen erzeugen keinen doppelten Etsy-Eintrag
 "@
     },
     @{
@@ -330,6 +410,22 @@ Bestand zwischen WooCommerce und Etsy so synchronisieren, dass Events nicht dopp
 "@
     },
     @{
+        Title = "[TASK] Konfliktregeln fuer geloeschte Listings und geaenderte SKUs definieren"
+        Milestone = "M3 Orders Fulfillment und Bestand"
+        Labels = @("type: task", "area: data-model", "area: etsy", "area: woocommerce", "priority: high")
+        Body = @"
+## Aufgabe
+Regeln definieren, wie die Integration bei geloeschten Etsy Listings, geaenderten SKUs, Bestand 0 und nicht mehr auffindbaren Produkten reagiert.
+
+## Akzeptanzkriterien
+- [ ] Regel fuer geloeschte Etsy Listings ist definiert
+- [ ] Regel fuer SKU-Aenderungen ist definiert
+- [ ] Regel fuer Bestand 0 ist definiert
+- [ ] Regel fuer nicht auffindbare WooCommerce-Produkte ist definiert
+- [ ] Konflikte werden nicht still automatisch ueberschrieben
+"@
+    },
+    @{
         Title = "[TASK] Etsy Bestellungen nach WooCommerce importieren"
         Milestone = "M3 Orders Fulfillment und Bestand"
         Labels = @("type: task", "area: orders", "area: etsy", "area: woocommerce", "priority: high")
@@ -357,6 +453,21 @@ Trackinginformationen aus WooCommerce an Etsy uebertragen.
 - [ ] Versandstatus wird korrekt gesetzt
 - [ ] Bereits versendete Bestellungen werden nicht doppelt gemeldet
 - [ ] Fehlerfaelle sind sichtbar
+"@
+    },
+    @{
+        Title = "[TASK] n8n Workflows fuer Benachrichtigung und Tagesreport bauen"
+        Milestone = "M4 n8n Betrieb Monitoring"
+        Labels = @("type: task", "area: n8n", "area: monitoring", "priority: medium")
+        Body = @"
+## Aufgabe
+n8n fuer operative Benachrichtigungen und Tagesreports einsetzen.
+
+## Akzeptanzkriterien
+- [ ] Kritische Sync-Fehler erzeugen eine Benachrichtigung
+- [ ] Tagesreport fuer erfolgreiche und fehlgeschlagene Jobs ist definiert
+- [ ] Manuelle Freigabe-Workflows sind nur fuer definierte Sonderfaelle vorgesehen
+- [ ] n8n speichert keine primaeren Mapping-Daten
 "@
     },
     @{
@@ -442,6 +553,23 @@ Dolibarr REST API aktivieren und einen minimalen Datenaustausch testen.
 "@
     },
     @{
+        Title = "[TASK] Deployment Dokumentation und Smoke Test erstellen"
+        Milestone = "M6 Produktionsreife"
+        Labels = @("type: docs", "area: infra", "priority: high")
+        Body = @"
+## Aufgabe
+Deployment-Schritte, Umgebungsvariablen und Smoke Tests dokumentieren.
+
+## Akzeptanzkriterien
+- [ ] Deployment ohne Docker ist Schritt fuer Schritt dokumentiert
+- [ ] systemd Restart und Logzugriff sind dokumentiert
+- [ ] Reverse Proxy und TLS sind dokumentiert
+- [ ] Smoke Test fuer WooCommerce API ist definiert
+- [ ] Smoke Test fuer Etsy API ist definiert
+- [ ] Rollback-Vorgehen ist beschrieben
+"@
+    },
+    @{
         Title = "[TASK] Pilotbetrieb und Abnahmetests vorbereiten"
         Milestone = "M6 Produktionsreife"
         Labels = @("type: task", "area: monitoring", "area: data-model", "priority: high")
@@ -464,4 +592,3 @@ foreach ($issue in $issues) {
 }
 
 Write-Host "GitHub Tracking Setup abgeschlossen fuer $Repo"
-

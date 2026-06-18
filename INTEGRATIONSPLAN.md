@@ -39,43 +39,9 @@ Das bedeutet:
 
 Konsequenz: Der wichtigste erste Schritt ist nicht der automatische Produkt-Push zu Etsy, sondern der kontrollierte Import des bestehenden Etsy-Sortiments nach WooCommerce inklusive SKU-, Varianten-, Bundle- und Personalisierungsmodell.
 
-## Bewertung: Kaufen vs. eigene Umsetzung
+## Entscheidung: Eigene Umsetzung
 
-### Kauf einer Integrationsloesung
-
-Sinnvoll, wenn schnell ein funktionierender Standardprozess gebraucht wird und die Etsy-Prozesse nicht stark individuell sind.
-
-Typische Vorteile:
-
-- schneller Start
-- fertige Produkt- und Bestands-Synchronisation
-- Support durch Anbieter
-- weniger eigener Wartungsaufwand
-- weniger Risiko bei Etsy-API-Aenderungen
-
-Typische Nachteile:
-
-- monatliche oder jaehrliche Kosten
-- eingeschraenkte Anpassbarkeit
-- Abhaengigkeit von Anbieterlogik und Datenmodell
-- schwieriger bei speziellen Mapping-Regeln, Bundles, Varianten, individuellen Templates oder Sonderprozessen
-
-Aktuelle Beispiele:
-
-- CedCommerce Etsy Integration for WooCommerce auf WooCommerce.com: ca. 179 USD/Jahr, beworben mit Produktmanagement, Sync und Support.
-- CedCommerce Multichannel for WooCommerce: Einstieg laut WooCommerce.com ab ca. 9 USD/Monat, eher interessant bei mehreren Marktplatzkanaelen.
-- Digital Product Labs WooCommerce Etsy Integration & Sync: beworben mit Jahres- und Lifetime-Modellen.
-- LitCommerce bietet WooCommerce/Etsy-Sync an; die alte WooCommerce.com-Dokumentation ist laut WooCommerce nicht mehr aktiv gepflegt, daher vor Kauf direkt beim Anbieter pruefen.
-
-Quellen:
-
-- https://woocommerce.com/products/etsy-integration-for-woocommerce/
-- https://woocommerce.com/products/multichannel-by-cedcommerce-ebay-amazon-walmart-etsy-integration/
-- https://dpl.company/woocommerce-etsy-integration/
-- https://litcommerce.com/woocommerce-etsy-integration/
-- https://woocommerce.com/document/litcommerce/
-
-### Eigene Applikation mit Codex und VS Code
+Eine Kauflösung ist keine Option. Die Umsetzung erfolgt als eigene Integrationslösung mit Codex und VS Code.
 
 Sinnvoll, wenn die Integration langfristig ein kontrollierter Kernprozess werden soll oder wenn Standardplugins die benoetigten Regeln nicht sauber abbilden.
 
@@ -137,16 +103,11 @@ Empfohlener Weg:
 
 1. Bestehendes Etsy-Sortiment zuerst analysieren und nach WooCommerce migrieren.
 2. Wegen Bundles, Personalisierungen und Made-to-Order-Produkten eine eigene Mapping- und Sync-Schicht einplanen.
-3. Eine fertige Integrationsloesung nur dann kaufen, wenn sie die Etsy-zu-WooCommerce-Erstmigration, Personalisierungsfelder, Varianten und automatische Ruecksynchronisation sauber beherrscht.
-4. WooCommerce nach der Migration als fuehrendes System festlegen.
-5. n8n selbst hosten, aber nur fuer Automatisierung, Benachrichtigungen und Nebenprozesse einsetzen.
-6. Dolibarr ueber die REST API anbinden, sobald WooCommerce/Etsy stabil laufen.
+3. WooCommerce nach der Migration als fuehrendes System festlegen.
+4. n8n selbst hosten, aber nur fuer Automatisierung, Benachrichtigungen und Nebenprozesse einsetzen.
+5. Dolibarr ueber die REST API anbinden, sobald WooCommerce/Etsy stabil laufen.
 
-Pragmatische Entscheidung:
-
-- Wenige Produkte, einfache Varianten, keine Sonderregeln: kaufen.
-- Personalisierte Produkte, Bundles, Made-to-Order und spaetere Dolibarr-Anbindung: eigene App oder Hybrid.
-- Bei 25 bis 100 Produkten ist der Umfang klein genug fuer eine kontrollierte eigene Umsetzung, aber gross genug, dass man Mapping, Logs und Fehlerbehandlung von Anfang an sauber bauen sollte.
+Bei 25 bis 100 Produkten ist der Umfang klein genug fuer eine kontrollierte eigene Umsetzung, aber gross genug, dass man Mapping, Logs und Fehlerbehandlung von Anfang an sauber bauen sollte.
 
 ## Zielarchitektur fuer eigene Umsetzung
 
@@ -175,7 +136,7 @@ Docker Compose bleibt fuer spaeter sinnvoll, wenn der Server konsolidiert oder n
 - Alle bereits gespeicherten produktiven Zugangsdaten rotieren.
 - Neues Secret-Konzept definieren: lokale `.env`, produktive Server-Umgebungsvariablen.
 - README mit Ziel, Setup und Betriebsannahmen anlegen.
-- Entscheidung dokumentieren: Kaufloesung, eigene App oder Hybrid.
+- Entscheidung dokumentieren: eigene App als gesetzter Umsetzungsweg.
 
 ### Phase 1: Fachliches Datenmodell
 
