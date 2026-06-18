@@ -1,0 +1,27 @@
+# Secrets and credentials
+config.cfg
+hetzner
+hetzner.pub
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Logs and local runtime files
+*.log
+*.sqlite
+*.sqlite3
+
+# Editor and OS
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
