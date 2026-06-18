@@ -66,6 +66,14 @@ Status:
 
 ## GitHub automatisch einrichten
 
+### Variante A: GitHub Actions
+
+Im Repository gibt es den Workflow `Setup GitHub Tracking`.
+
+Der Workflow kann unter `Actions` manuell gestartet werden und legt Labels, Milestones und initiale Issues direkt in GitHub an. Er nutzt den eingebauten `GITHUB_TOKEN` des Repositories und benoetigt lokal keine `gh` Anmeldung.
+
+### Variante B: Lokal per GitHub CLI
+
 Voraussetzung:
 
 ```powershell
@@ -79,4 +87,3 @@ powershell -ExecutionPolicy Bypass -File .\scripts\setup-github-tracking.ps1
 ```
 
 Das Skript legt Labels, Milestones und initiale Issues im Repository `palbiez/woocommerce_integration` an. Bereits vorhandene Labels und Issues mit gleichem Titel werden uebersprungen bzw. aktualisiert.
-
