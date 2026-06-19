@@ -228,7 +228,7 @@ Docker Compose bleibt fuer spaeter sinnvoll, wenn der Server konsolidiert oder n
 
 - Deployment ohne Docker vorbereiten: Python venv, systemd Services, Reverse Proxy, Logrotation.
 - Hetzner Server absichern: SSH, Firewall, Updates, nicht-root Deployment-User.
-- Reverse Proxy mit TLS einrichten.
+- Reverse Proxy mit TLS einrichten, siehe `docs/reverse-proxy-tls.md` und `scripts/setup-reverse-proxy-tls.sh`.
 - Produktive Umgebungsvariablen setzen.
 - Deployment-Dokumentation schreiben.
 - Smoke-Test nach Deployment definieren.

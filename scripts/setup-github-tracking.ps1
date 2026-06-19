@@ -137,17 +137,17 @@ Alle bereits lokal gespeicherten produktiven Zugangsdaten rotieren und ein Secre
 Projektgrundlage dokumentieren, damit Setup, Zielbild und Betriebsannahmen nachvollziehbar sind.
 
 ## Akzeptanzkriterien
-- [ ] README beschreibt Ziel der Integration
-- [ ] Lokales Setup ist dokumentiert
-- [ ] Server-/Deployment-Annahmen sind dokumentiert
-- [ ] Umgang mit Secrets ist verlinkt
-- [ ] Link zum Integrationsplan ist enthalten
+- [x] README beschreibt Ziel der Integration
+- [x] Lokales Setup ist dokumentiert
+- [x] Server-/Deployment-Annahmen sind dokumentiert
+- [x] Umgang mit Secrets ist verlinkt
+- [x] Link zum Integrationsplan ist enthalten
 "@
     },
     @{
         Title = "[DECISION] Zielarchitektur ohne Docker fuer Start festlegen"
         Milestone = "M0 Sicherheit und Projektsetup"
-        Labels = @("type: decision", "area: infra", "priority: high", "status: needs-decision")
+        Labels = @("type: decision", "area: infra", "priority: high")
         Body = @"
 ## Entscheidung
 Wie wird die eigene Integrationsapp auf dem bestehenden Hetzner-Server betrieben?
@@ -156,10 +156,10 @@ Wie wird die eigene Integrationsapp auf dem bestehenden Hetzner-Server betrieben
 Start ohne Docker: Python venv, systemd Service, Reverse Proxy und separate n8n Installation.
 
 ## Akzeptanzkriterien
-- [ ] Betriebsmodell ist entschieden
-- [ ] Service-User und Verzeichnisstruktur sind definiert
-- [ ] Reverse-Proxy- und TLS-Ansatz sind dokumentiert
-- [ ] Spaetere Docker-Migration ist als Option dokumentiert
+- [x] Betriebsmodell ist entschieden
+- [x] Service-User und Verzeichnisstruktur sind definiert
+- [x] Reverse-Proxy- und TLS-Ansatz ist dokumentiert
+- [x] Spaetere Docker-Migration ist als Option dokumentiert
 "@
     },
     @{
