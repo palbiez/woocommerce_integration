@@ -10,6 +10,7 @@ from common import (
     main_guard,
     output_dir,
     timestamp,
+    wc_url,
     wc_get,
     write_json,
 )
@@ -34,10 +35,22 @@ def run() -> None:
     )
     add_common_args(parser)
     parser.add_argument("--per-page", type=int, default=5, help="Anzahl Testobjekte je Endpoint.")
+    parser.add_argument(
+        "--show-config",
+        action="store_true",
+        help="Nur gelesene Config-Werte und Ziel-URLs anzeigen, keine API-Aufrufe ausfuehren.",
+    )
     args = parser.parse_args()
 
     config = load_config(args.config)
     wc = load_woocommerce_config(config)
+
+    if args.show_config:
+        print(f"Config-Datei: {wc.config_path}")
+        print(f"WooCommerce Url: {wc.base_url}")
+        print(f"Products Endpoint: {wc_url(wc, 'products')}")
+        print(f"Orders Endpoint: {wc_url(wc, 'orders')}")
+        return
 
     products = wc_get(wc, "products", {"per_page": args.per_page, "page": 1})
     orders = wc_get(wc, "orders", {"per_page": args.per_page, "page": 1})

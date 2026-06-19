@@ -163,14 +163,14 @@ Der Workflow kann unter `Actions` manuell gestartet werden und legt Labels, Mile
 
 Voraussetzung:
 
-```powershell
+```bash
 gh auth login
 ```
 
 Danach:
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\setup-github-tracking.ps1
+```bash
+pwsh ./scripts/setup-github-tracking.ps1
 ```
 
 Das Skript legt Labels, Milestones und initiale Issues im Repository `palbiez/woocommerce_integration` an. Bereits vorhandene Labels und Issues mit gleichem Titel werden uebersprungen bzw. aktualisiert.

@@ -23,19 +23,19 @@ Der detaillierte Plan steht in [INTEGRATIONSPLAN.md](INTEGRATIONSPLAN.md).
 Voraussetzungen fuer lokale Entwicklung:
 
 - Git
-- Python 3.13 oder Python 3.10
-- PowerShell unter Windows oder eine Bash-kompatible Shell unter Linux/macOS
+- Python 3.13
+- Bash-kompatible Shell
 
-Auf dem aktuellen Windows-System liegen Python-Installationen typischerweise unter:
+Auf dem Hetzner-Server liegt die Projekt-venv unter:
 
-- `C:\Users\philipp.albiez\AppData\Local\Programs\Python\Python313`
-- `C:\Users\philipp.albiez\AppData\Local\Programs\Python\Python310`
+- `/mnt/wci/woocommerce_integration/.venv`
 
-Beispiel fuer ein lokales Python-Environment unter Windows:
+Beispiel fuer das Python-Environment unter Ubuntu:
 
-```powershell
-py -3.13 -m venv .venv
-.\.venv\Scripts\Activate.ps1
+```bash
+cd /mnt/wci/woocommerce_integration
+bash scripts/setup-python-venv.sh
+source .venv/bin/activate
 python -m pip install --upgrade pip
 ```
 
@@ -54,6 +54,7 @@ Sobald die Python-App ergaenzt ist, werden die konkreten Abhaengigkeiten hier do
 |   |-- reverse-proxy-tls.md
 |   `-- secrets.md
 `-- scripts/
+    |-- setup-python-venv.sh
     |-- setup-github-tracking.ps1
     `-- setup-reverse-proxy-tls.sh
 ```

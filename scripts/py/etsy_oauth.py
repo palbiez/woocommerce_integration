@@ -6,13 +6,14 @@ import hashlib
 import secrets
 import threading
 import urllib.parse
-import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 
 from common import (
     ETSY_TOKEN_FILE,
+    SECRET_DIR,
     add_common_args,
+    ensure_writable_dir,
     etsy_api_key_header,
     load_config,
     load_etsy_config,
@@ -56,15 +57,16 @@ class OAuthCallback(BaseHTTPRequestHandler):
         return
 
 
-def wait_for_callback(host: str, port: int) -> dict[str, str]:
+def wait_for_callback(host: str, port: int, timeout: int) -> dict[str, str]:
     server = HTTPServer((host, port), OAuthCallback)
     server.oauth_result = {}
     thread = threading.Thread(target=server.handle_request, daemon=True)
     thread.start()
-    thread.join(timeout=300)
+    print(f"Warte auf OAuth Callback auf http://{host}:{port}/callback ...", flush=True)
+    thread.join(timeout=timeout)
     server.server_close()
     if not server.oauth_result:
-        raise TimeoutError("Kein OAuth Callback innerhalb von 300 Sekunden erhalten.")
+        raise TimeoutError(f"Kein OAuth Callback innerhalb von {timeout} Sekunden erhalten.")
     return server.oauth_result
 
 
@@ -96,18 +98,18 @@ def exchange_code(
 
 def run() -> None:
     parser = argparse.ArgumentParser(
-        description="M1-020: Etsy OAuth 2.0 PKCE Flow ausfuehren und Token sicher lokal speichern."
+        description="M1-020: Etsy OAuth 2.0 PKCE Flow ohne Server-Browser ausfuehren und Token sicher lokal speichern."
     )
     add_common_args(parser)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--timeout", type=int, default=300, help="Wartezeit fuer lokalen OAuth Callback.")
     parser.add_argument("--redirect-uri", default="")
     parser.add_argument("--scope", nargs="*", default=DEFAULT_SCOPES)
-    parser.add_argument("--no-browser", action="store_true", help="Auth-URL nur ausgeben.")
     parser.add_argument(
-        "--manual",
+        "--callback",
         action="store_true",
-        help="Keinen lokalen Callback starten; Redirect-URL oder Code manuell einfuegen.",
+        help="Lokalen Callback starten. Nur mit SSH-Portforwarding oder lokalem Browser sinnvoll.",
     )
     parser.add_argument("--code", default="", help="Authorization Code manuell uebergeben.")
     parser.add_argument("--state", default="", help="State manuell setzen, nur mit --code relevant.")
@@ -116,6 +118,7 @@ def run() -> None:
     config = load_config(args.config)
     etsy = load_etsy_config(config)
     redirect_uri = args.redirect_uri or f"http://{args.host}:{args.port}/callback"
+    ensure_writable_dir(SECRET_DIR)
     verifier = secrets.token_urlsafe(64)
     state = secrets.token_urlsafe(24)
 
@@ -129,14 +132,25 @@ def run() -> None:
         "code_challenge_method": "S256",
     }
     auth_url = "https://www.etsy.com/oauth/connect?" + urllib.parse.urlencode(auth_params)
+    print(f"Token-Datei: {ETSY_TOKEN_FILE}", flush=True)
 
     if args.code:
         code = args.code
         returned_state = args.state or state
-    elif args.manual:
+    elif args.callback:
         print("Etsy OAuth URL:")
         print(auth_url)
-        raw = input("Nach Freigabe komplette Redirect-URL oder nur den code-Parameter einfuegen: ").strip()
+        callback = wait_for_callback(args.host, args.port, args.timeout)
+        if callback.get("error"):
+            raise RuntimeError(f"Etsy OAuth Fehler: {callback['error']}")
+        code = callback.get("code", "")
+        returned_state = callback.get("state", "")
+    else:
+        print("Etsy OAuth URL:")
+        print(auth_url)
+        print()
+        print("Diese URL lokal im Browser oeffnen und danach die komplette Redirect-URL hier einfuegen.")
+        raw = input("Redirect-URL oder nur den code-Parameter: ").strip()
         if raw.startswith("http://") or raw.startswith("https://"):
             parsed = urllib.parse.urlparse(raw)
             params = urllib.parse.parse_qs(parsed.query)
@@ -144,17 +158,7 @@ def run() -> None:
             returned_state = (params.get("state") or [""])[0]
         else:
             code = raw
-            returned_state = input("state-Parameter einfuegen: ").strip()
-    else:
-        print("Etsy OAuth URL:")
-        print(auth_url)
-        if not args.no_browser:
-            webbrowser.open(auth_url)
-        callback = wait_for_callback(args.host, args.port)
-        if callback.get("error"):
-            raise RuntimeError(f"Etsy OAuth Fehler: {callback['error']}")
-        code = callback.get("code", "")
-        returned_state = callback.get("state", "")
+            returned_state = input("state-Parameter: ").strip()
 
     if not code:
         raise RuntimeError("Kein Authorization Code erhalten.")

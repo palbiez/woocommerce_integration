@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin
+from urllib.parse import urlparse
 
 import requests
 
@@ -32,6 +33,7 @@ class WooConfig:
     base_url: str
     api_key: str
     api_secret: str
+    config_path: str
 
 
 @dataclass(frozen=True)
@@ -58,7 +60,18 @@ def load_config(path: str | Path) -> configparser.ConfigParser:
     read_files = config.read(cfg_path, encoding="utf-8")
     if not read_files:
         raise ScriptError(f"Config-Datei konnte nicht gelesen werden: {cfg_path}")
+    config["_meta"] = {"path": str(cfg_path.resolve())}
     return config
+
+
+def normalize_url(value: str, section: str, key: str) -> str:
+    normalized = value.strip().strip('"').strip("'").rstrip("/")
+    parsed = urlparse(normalized)
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        raise ScriptError(
+            f"Ungueltige URL in {section}.{key}: {value!r}. Erwartet wird z. B. https://shop.mrs-daui.de"
+        )
+    return normalized
 
 
 def require_value(config: configparser.ConfigParser, section: str, key: str) -> str:
@@ -71,10 +84,12 @@ def require_value(config: configparser.ConfigParser, section: str, key: str) -> 
 
 
 def load_woocommerce_config(config: configparser.ConfigParser) -> WooConfig:
+    url = require_value(config, "Woocommerce", "Url")
     return WooConfig(
-        base_url=require_value(config, "Woocommerce", "Url").rstrip("/"),
+        base_url=normalize_url(url, "Woocommerce", "Url"),
         api_key=require_value(config, "Woocommerce", "ApiKey"),
         api_secret=require_value(config, "Woocommerce", "ApiSecret"),
+        config_path=config.get("_meta", "path", fallback=str(DEFAULT_CONFIG)),
     )
 
 
@@ -89,6 +104,17 @@ def load_etsy_config(config: configparser.ConfigParser) -> EtsyConfig:
 
 def ensure_dir(path: Path) -> Path:
     path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def ensure_writable_dir(path: Path) -> Path:
+    ensure_dir(path)
+    test_file = path / ".write-test"
+    try:
+        test_file.write_text("ok", encoding="utf-8")
+        test_file.unlink()
+    except OSError as exc:
+        raise ScriptError(f"Verzeichnis ist nicht beschreibbar: {path} ({exc})") from exc
     return path
 
 

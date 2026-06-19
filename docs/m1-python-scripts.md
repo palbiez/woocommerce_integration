@@ -4,64 +4,100 @@ Stand: 19.06.2026
 
 Diese Skripte unterstuetzen Milestone `M1 Etsy Bestandsaufnahme und WooCommerce Migration`.
 
-## Vorbereitung
+## Vorbereitung auf Ubuntu
 
-Unter Windows:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\setup-python-venv.ps1
-.\.venv\Scripts\Activate.ps1
-```
-
-Unter Linux/macOS:
+Im Projektverzeichnis auf dem Server:
 
 ```bash
+cd /mnt/wci/woocommerce_integration
 bash scripts/setup-python-venv.sh
 source .venv/bin/activate
 ```
 
+Pruefen:
+
+```bash
+which python
+python --version
+```
+
+Erwartet ist ein Python aus dem Projekt, z. B.:
+
+```text
+/mnt/wci/woocommerce_integration/.venv/bin/python
+Python 3.13.x
+```
+
 Alle Skripte lesen standardmaessig `config.cfg` aus dem Projektverzeichnis. Alternative:
 
-```powershell
-python .\scripts\py\wc_api_check.py --config C:\pfad\zu\config.cfg
+```bash
+python scripts/py/wc_api_check.py --config /mnt/wci/woocommerce_integration/config.cfg
 ```
 
 ## Reihenfolge
 
 ### M1-010 WooCommerce REST API Zugriff testen
 
-```powershell
-python .\scripts\py\wc_api_check.py
+Zuerst pruefen, welche Config und URL Python wirklich nutzt:
+
+```bash
+python scripts/py/wc_api_check.py --show-config
+```
+
+Danach API-Test ausfuehren:
+
+```bash
+python scripts/py/wc_api_check.py
 ```
 
 Erzeugt einen Bericht unter `data/m1_woocommerce_check/`.
 
 ### M1-020 Etsy OAuth und Token-Speicherung als POC bauen
 
-```powershell
-python .\scripts\py\etsy_oauth.py
+Das Script oeffnet auf dem Server keinen Browser. Es gibt eine OAuth-URL aus und wartet auf die manuelle Rueckgabe aus deinem lokalen Browser:
+
+```bash
+python scripts/py/etsy_oauth.py
 ```
 
-Das Token wird unter `.secrets/etsy_token.json` gespeichert. Dieser Pfad ist in `.gitignore` eingetragen.
+Ablauf:
 
-Falls der lokale Callback nicht zur Etsy-App passt, kann die Redirect-URI explizit gesetzt und die Rueckgabe manuell eingefuegt werden:
+1. Das Script gibt eine Etsy-OAuth-URL aus.
+2. Diese URL lokal im Browser oeffnen.
+3. Nach der Freigabe die komplette Redirect-URL oder den `code`-Parameter im Terminal einfuegen.
+4. Das Token wird unter `.secrets/etsy_token.json` gespeichert.
 
-```powershell
-python .\scripts\py\etsy_oauth.py --redirect-uri https://example.com/callback --manual
+Pruefen, ob der Token-Ordner beschreibbar ist:
+
+```bash
+mkdir -p .secrets
+test -w .secrets && echo "OK: .secrets ist beschreibbar"
+```
+
+Falls die Etsy-App eine bestimmte Redirect-URI verlangt:
+
+```bash
+python scripts/py/etsy_oauth.py --redirect-uri https://example.com/callback
+```
+
+Der lokale Callback-Flow ist nur sinnvoll, wenn ein SSH-Portforwarding eingerichtet ist. Dann explizit starten:
+
+```bash
+python scripts/py/etsy_oauth.py --callback
 ```
 
 ### M1-030 Bestehende Etsy Listings analysieren
 
-```powershell
-python .\scripts\py\etsy_analyze_listings.py
+```bash
+python scripts/py/etsy_analyze_listings.py
 ```
 
 Erzeugt JSON- und CSV-Auswertungen unter `data/m1_etsy_analysis/`. Die Analyse markiert unter anderem fehlende SKUs, Varianten, personalisierte Produkte, Made-to-Order-Kandidaten und Bundle-Kandidaten.
 
 ### M1-040 bis M1-070 Decision-Templates erstellen
 
-```powershell
-python .\scripts\py\create_m1_decision_templates.py
+```bash
+python scripts/py/create_m1_decision_templates.py
 ```
 
 Erzeugt Markdown-Vorlagen unter `docs/m1-decisions/` fuer:
@@ -73,8 +109,8 @@ Erzeugt Markdown-Vorlagen unter `docs/m1-decisions/` fuer:
 
 ### M1-080 Import-Preview Etsy nach WooCommerce erstellen
 
-```powershell
-python .\scripts\py\build_import_preview.py
+```bash
+python scripts/py/build_import_preview.py
 ```
 
 Erzeugt `data/m1_import_preview/latest.json`. Dieses Skript schreibt nicht nach WooCommerce.
@@ -83,20 +119,20 @@ Erzeugt `data/m1_import_preview/latest.json`. Dieses Skript schreibt nicht nach 
 
 Erst Dry-Run:
 
-```powershell
-python .\scripts\py\import_preview_to_woocommerce.py
+```bash
+python scripts/py/import_preview_to_woocommerce.py
 ```
 
 Echter Import nur explizit:
 
-```powershell
-python .\scripts\py\import_preview_to_woocommerce.py --apply
+```bash
+python scripts/py/import_preview_to_woocommerce.py --apply
 ```
 
 Wenn die Preview fehlende SKUs enthaelt, bricht der Import ab. Das kann nur bewusst uebersteuert werden:
 
-```powershell
-python .\scripts\py\import_preview_to_woocommerce.py --apply --allow-missing-sku
+```bash
+python scripts/py/import_preview_to_woocommerce.py --apply --allow-missing-sku
 ```
 
 ## Schutzmechanismen
