@@ -1,10 +1,18 @@
 name: Decision
 description: Offene Architektur- oder Fachentscheidung dokumentieren
-title: "[DECISION] "
+title: "[M?-???] [DECISION] "
 labels:
   - "type: decision"
   - "status: needs-decision"
 body:
+  - type: input
+    id: order
+    attributes:
+      label: Reihenfolge
+      description: Reihenfolge innerhalb des Milestones, z. B. M2-040.
+      placeholder: M2-040
+    validations:
+      required: true
   - type: textarea
     id: question
     attributes:
@@ -28,4 +36,3 @@ body:
       description: Welche Folgen hat die Entscheidung fuer Umsetzung, Betrieb oder Kosten?
     validations:
       required: true
-

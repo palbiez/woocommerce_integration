@@ -48,7 +48,9 @@ Sobald die Python-App ergaenzt ist, werden die konkreten Abhaengigkeiten hier do
 |-- INTEGRATIONSPLAN.md
 |-- anforderungen.md
 |-- docs/
+|   |-- configuration.md
 |   |-- github-tracking.md
+|   |-- m1-python-scripts.md
 |   |-- reverse-proxy-tls.md
 |   `-- secrets.md
 `-- scripts/
@@ -65,11 +67,15 @@ Start ohne Docker:
 - Service-User `etsy_integration`
 - Python venv im App-Verzeichnis
 - Betrieb als systemd Service
-- App bindet nur lokal, z. B. `127.0.0.1:8000`
-- Nginx stellt Reverse Proxy und TLS bereit
+- App bindet nur lokal, z. B. `127.0.0.1:6001`
+- Nginx stellt Reverse Proxy und TLS auf `8443` bereit
 - n8n wird spaeter separat betrieben, vorzugsweise unter eigener Subdomain
 
+Die lokale Konfiguration steht in `config.cfg` im INI-Format. Aufbau und Lese-Beispiele fuer Python und Shell stehen in [docs/configuration.md](docs/configuration.md).
+
 Der Reverse-Proxy- und TLS-Ansatz ist in [docs/reverse-proxy-tls.md](docs/reverse-proxy-tls.md) dokumentiert. Das passende Setup-Script liegt unter [scripts/setup-reverse-proxy-tls.sh](scripts/setup-reverse-proxy-tls.sh).
+
+Die Python-Skripte fuer Milestone M1 sind in [docs/m1-python-scripts.md](docs/m1-python-scripts.md) dokumentiert.
 
 ## Secrets
 

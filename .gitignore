@@ -5,6 +5,8 @@ hetzner.pub
 .env
 .env.*
 !.env.example
+.secrets/
+data/
 
 # Python
 __pycache__/

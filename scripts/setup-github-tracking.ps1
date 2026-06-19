@@ -47,20 +47,37 @@ function Ensure-Milestone {
 function Ensure-Issue {
     param(
         [string]$Title,
+        [string]$Order,
         [string]$Body,
         [string[]]$Labels,
         [string]$Milestone,
         [array]$ExistingIssues
     )
 
-    $exists = $ExistingIssues | Where-Object { $_.title -eq $Title }
-    if ($exists) {
-        Write-Host "Issue existiert bereits: $Title"
-        return
+    $desiredTitle = if ([string]::IsNullOrWhiteSpace($Order)) { $Title } else { "[$Order] $Title" }
+    $escapedTitle = [regex]::Escape($Title)
+    $exists = $ExistingIssues | Where-Object {
+        $_.title -eq $desiredTitle -or
+        $_.title -eq $Title -or
+        $_.title -match "^\[M[0-9]+-[0-9]+\]\s+$escapedTitle$"
+    } | Select-Object -First 1
+
+    $bodyWithOrder = if ([string]::IsNullOrWhiteSpace($Order)) {
+        $Body
+    }
+    else {
+        "## Reihenfolge`n`n$Order`n`n$Body"
     }
 
     $labelArg = $Labels -join ","
-    gh issue create --repo $Repo --title $Title --body $Body --label $labelArg --milestone $Milestone | Out-Null
+
+    if ($exists) {
+        Write-Host "Issue existiert bereits, aktualisiere: $desiredTitle"
+        gh issue edit $exists.number --repo $Repo --title $desiredTitle --body $bodyWithOrder --milestone $Milestone --add-label $labelArg | Out-Null
+        return
+    }
+
+    gh issue create --repo $Repo --title $desiredTitle --body $bodyWithOrder --label $labelArg --milestone $Milestone | Out-Null
 }
 
 Test-Gh
@@ -113,6 +130,7 @@ $existingIssues = gh issue list --repo $Repo --state all --limit 500 --json titl
 $issues = @(
     @{
         Title = "[SEC] Zugangsdaten rotieren und Secret-Konzept festlegen"
+        Order = "M0-010"
         Milestone = "M0 Sicherheit und Projektsetup"
         Labels = @("type: security", "area: infra", "priority: critical")
         Body = @"
@@ -130,6 +148,7 @@ Alle bereits lokal gespeicherten produktiven Zugangsdaten rotieren und ein Secre
     },
     @{
         Title = "[TASK] README und Projektgrundlage erstellen"
+        Order = "M0-020"
         Milestone = "M0 Sicherheit und Projektsetup"
         Labels = @("type: docs", "area: infra", "priority: high")
         Body = @"
@@ -146,6 +165,7 @@ Projektgrundlage dokumentieren, damit Setup, Zielbild und Betriebsannahmen nachv
     },
     @{
         Title = "[DECISION] Zielarchitektur ohne Docker fuer Start festlegen"
+        Order = "M0-030"
         Milestone = "M0 Sicherheit und Projektsetup"
         Labels = @("type: decision", "area: infra", "priority: high")
         Body = @"
@@ -164,6 +184,7 @@ Start ohne Docker: Python venv, systemd Service, Reverse Proxy und separate n8n 
     },
     @{
         Title = "[REQ] SKU- und Produktdatenmodell definieren"
+        Order = "M1-040"
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: requirement", "area: data-model", "area: woocommerce", "area: etsy", "priority: high")
         Body = @"
@@ -180,6 +201,7 @@ Ein stabiles Datenmodell fuer Produkte, Varianten, SKUs, Bundles, Personalisieru
     },
     @{
         Title = "[TASK] Bestehende Etsy Listings per API oder Export analysieren"
+        Order = "M1-030"
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: task", "area: etsy", "area: data-model", "priority: high")
         Body = @"
@@ -195,6 +217,7 @@ Alle bestehenden Etsy Listings erfassen und technisch auswerten.
     },
     @{
         Title = "[DECISION] WooCommerce Erweiterung fuer Personalisierungsfelder waehlen"
+        Order = "M1-050"
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: decision", "area: woocommerce", "area: data-model", "priority: high", "status: needs-decision")
         Body = @"
@@ -210,6 +233,7 @@ Welche WooCommerce-Erweiterung oder Eigenlogik bildet personalisierte Produktfel
     },
     @{
         Title = "[DECISION] Bundle-Modell in WooCommerce festlegen"
+        Order = "M1-060"
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: decision", "area: woocommerce", "area: data-model", "priority: high", "status: needs-decision")
         Body = @"
@@ -225,6 +249,7 @@ Wie werden Bundles technisch in WooCommerce abgebildet?
     },
     @{
         Title = "[DECISION] Made-to-Order Bestand und Lieferzeit definieren"
+        Order = "M1-070"
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: decision", "area: data-model", "area: fulfillment", "priority: high", "status: needs-decision")
         Body = @"
@@ -240,6 +265,7 @@ Wie werden Made-to-Order-Produkte bestandsseitig und im Lieferzeitmodell behande
     },
     @{
         Title = "[TASK] Etsy OAuth und Token-Speicherung als POC bauen"
+        Order = "M1-020"
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: task", "area: etsy", "area: infra", "priority: high")
         Body = @"
@@ -255,6 +281,7 @@ OAuth 2.0 Flow fuer Etsy implementieren und Refresh Tokens sicher speichern.
     },
     @{
         Title = "[TASK] WooCommerce REST API Zugriff testen"
+        Order = "M1-010"
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: task", "area: woocommerce", "area: infra", "priority: high")
         Body = @"
@@ -272,6 +299,7 @@ WooCommerce REST API Zugriff fuer Produkte, Varianten, Bestand und Bestellungen 
     },
     @{
         Title = "[TASK] WooCommerce Webhooks fuer Produkt und Bestellung einrichten"
+        Order = "M2-030"
         Milestone = "M2 Core Sync WooCommerce Etsy"
         Labels = @("type: task", "area: woocommerce", "area: infra", "priority: high")
         Body = @"
@@ -288,6 +316,7 @@ WooCommerce Webhooks fuer Produkt- und Bestellaenderungen vorbereiten.
     },
     @{
         Title = "[TASK] Import-Preview Etsy nach WooCommerce erstellen"
+        Order = "M1-080"
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: task", "area: etsy", "area: woocommerce", "area: data-model", "priority: high")
         Body = @"
@@ -303,6 +332,7 @@ Vor dem Schreiben nach WooCommerce eine Vorschau erzeugen, welche Produkte, Vari
     },
     @{
         Title = "[TASK] Initialen WooCommerce Produktimport durchfuehren"
+        Order = "M1-090"
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: task", "area: woocommerce", "area: etsy", "priority: high")
         Body = @"
@@ -319,6 +349,7 @@ Bestehende Etsy Produkte nach Freigabe kontrolliert in WooCommerce anlegen.
     },
     @{
         Title = "[TASK] Etsy Kategorie Attribut und Template Mapping erstellen"
+        Order = "M2-020"
         Milestone = "M2 Core Sync WooCommerce Etsy"
         Labels = @("type: task", "area: etsy", "area: data-model", "priority: high")
         Body = @"
@@ -335,6 +366,7 @@ Mapping fuer Etsy Kategorien, Attribute, Versandprofile und Listing-Templates de
     },
     @{
         Title = "[TASK] Persistente Mapping-Tabelle erstellen"
+        Order = "M2-010"
         Milestone = "M2 Core Sync WooCommerce Etsy"
         Labels = @("type: task", "area: data-model", "area: etsy", "area: woocommerce", "priority: high")
         Body = @"
@@ -350,6 +382,7 @@ Mapping zwischen WooCommerce Product/Variation IDs und Etsy Listing/Inventory ID
     },
     @{
         Title = "[TASK] Automatischen Produktabgleich WooCommerce zu Etsy implementieren"
+        Order = "M2-050"
         Milestone = "M2 Core Sync WooCommerce Etsy"
         Labels = @("type: task", "area: woocommerce", "area: etsy", "priority: high")
         Body = @"
@@ -365,6 +398,7 @@ WooCommerce-Aenderungen automatisch nach Etsy synchronisieren.
     },
     @{
         Title = "[TASK] Review-Status fuer neue Etsy Listings vorsehen"
+        Order = "M2-060"
         Milestone = "M2 Core Sync WooCommerce Etsy"
         Labels = @("type: task", "area: etsy", "area: woocommerce", "priority: medium")
         Body = @"
@@ -380,6 +414,7 @@ Fuer neue Produkte einen kontrollierten Erstveroeffentlichungsprozess vorsehen, 
     },
     @{
         Title = "[DECISION] Preislogik Etsy und WooCommerce festlegen"
+        Order = "M2-040"
         Milestone = "M2 Core Sync WooCommerce Etsy"
         Labels = @("type: decision", "area: data-model", "area: etsy", "area: woocommerce", "priority: medium", "status: needs-decision")
         Body = @"
@@ -395,6 +430,7 @@ Sollen Etsy-Preise identisch zu WooCommerce sein oder automatisch aufgeschlagen 
     },
     @{
         Title = "[TASK] Bestandssync mit Idempotenz umsetzen"
+        Order = "M3-020"
         Milestone = "M3 Orders Fulfillment und Bestand"
         Labels = @("type: task", "area: fulfillment", "area: orders", "priority: critical")
         Body = @"
@@ -411,6 +447,7 @@ Bestand zwischen WooCommerce und Etsy so synchronisieren, dass Events nicht dopp
     },
     @{
         Title = "[TASK] Konfliktregeln fuer geloeschte Listings und geaenderte SKUs definieren"
+        Order = "M3-010"
         Milestone = "M3 Orders Fulfillment und Bestand"
         Labels = @("type: task", "area: data-model", "area: etsy", "area: woocommerce", "priority: high")
         Body = @"
@@ -427,6 +464,7 @@ Regeln definieren, wie die Integration bei geloeschten Etsy Listings, geaenderte
     },
     @{
         Title = "[TASK] Etsy Bestellungen nach WooCommerce importieren"
+        Order = "M3-030"
         Milestone = "M3 Orders Fulfillment und Bestand"
         Labels = @("type: task", "area: orders", "area: etsy", "area: woocommerce", "priority: high")
         Body = @"
@@ -442,6 +480,7 @@ Etsy-Bestellungen nach WooCommerce importieren und eindeutig als Etsy-Ursprung m
     },
     @{
         Title = "[TASK] Versand- und Trackingdaten zu Etsy synchronisieren"
+        Order = "M3-040"
         Milestone = "M3 Orders Fulfillment und Bestand"
         Labels = @("type: task", "area: fulfillment", "area: etsy", "area: woocommerce", "priority: high")
         Body = @"
@@ -457,6 +496,7 @@ Trackinginformationen aus WooCommerce an Etsy uebertragen.
     },
     @{
         Title = "[TASK] n8n Workflows fuer Benachrichtigung und Tagesreport bauen"
+        Order = "M4-040"
         Milestone = "M4 n8n Betrieb Monitoring"
         Labels = @("type: task", "area: n8n", "area: monitoring", "priority: medium")
         Body = @"
@@ -472,6 +512,7 @@ n8n fuer operative Benachrichtigungen und Tagesreports einsetzen.
     },
     @{
         Title = "[TASK] Integrationsapp als systemd Service auf Hetzner deployen"
+        Order = "M4-010"
         Milestone = "M4 n8n Betrieb Monitoring"
         Labels = @("type: task", "area: infra", "priority: high")
         Body = @"
@@ -488,6 +529,7 @@ Die Integrationsapp ohne Docker als systemd Service betreiben.
     },
     @{
         Title = "[TASK] n8n selbst hosten und absichern"
+        Order = "M4-020"
         Milestone = "M4 n8n Betrieb Monitoring"
         Labels = @("type: task", "area: n8n", "area: infra", "priority: high")
         Body = @"
@@ -504,6 +546,7 @@ n8n auf dem Hetzner-Server betreiben und absichern.
     },
     @{
         Title = "[TASK] Sync-Logs, Retry und Alerts einrichten"
+        Order = "M4-030"
         Milestone = "M4 n8n Betrieb Monitoring"
         Labels = @("type: task", "area: monitoring", "area: n8n", "priority: high")
         Body = @"
@@ -519,6 +562,7 @@ Fehler und Sync-Vorgaenge nachvollziehbar machen.
     },
     @{
         Title = "[DECISION] Dolibarr Datenfluss festlegen"
+        Order = "M5-010"
         Milestone = "M5 Dolibarr Pilotintegration"
         Labels = @("type: decision", "area: dolibarr", "area: data-model", "priority: medium", "status: needs-decision")
         Body = @"
@@ -539,6 +583,7 @@ Welche Daten sollen zwischen WooCommerce und Dolibarr synchronisiert werden?
     },
     @{
         Title = "[TASK] Dolibarr REST API POC bauen"
+        Order = "M5-020"
         Milestone = "M5 Dolibarr Pilotintegration"
         Labels = @("type: task", "area: dolibarr", "area: infra", "priority: medium")
         Body = @"
@@ -554,6 +599,7 @@ Dolibarr REST API aktivieren und einen minimalen Datenaustausch testen.
     },
     @{
         Title = "[TASK] Deployment Dokumentation und Smoke Test erstellen"
+        Order = "M6-010"
         Milestone = "M6 Produktionsreife"
         Labels = @("type: docs", "area: infra", "priority: high")
         Body = @"
@@ -571,6 +617,7 @@ Deployment-Schritte, Umgebungsvariablen und Smoke Tests dokumentieren.
     },
     @{
         Title = "[TASK] Pilotbetrieb und Abnahmetests vorbereiten"
+        Order = "M6-020"
         Milestone = "M6 Produktionsreife"
         Labels = @("type: task", "area: monitoring", "area: data-model", "priority: high")
         Body = @"
@@ -588,7 +635,7 @@ Pilot mit wenigen Produkten vorbereiten und Abnahmetests definieren.
 )
 
 foreach ($issue in $issues) {
-    Ensure-Issue -Title $issue.Title -Body $issue.Body -Labels $issue.Labels -Milestone $issue.Milestone -ExistingIssues $existingIssues
+    Ensure-Issue -Title $issue.Title -Order $issue.Order -Body $issue.Body -Labels $issue.Labels -Milestone $issue.Milestone -ExistingIssues $existingIssues
 }
 
 Write-Host "GitHub Tracking Setup abgeschlossen fuer $Repo"

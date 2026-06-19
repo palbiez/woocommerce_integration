@@ -17,6 +17,8 @@ Secrets bleiben ausserhalb von Git. Dazu gehoeren insbesondere:
 
 Die `.gitignore` blockiert bekannte lokale Secret-Dateien bereits, unter anderem `config.cfg`, `hetzner`, `.env` und `.env.*`.
 
+Die lokale `config.cfg` ist gleichzeitig Konfigurationsdatei und Secret-Datei. Das Format ist in [configuration.md](configuration.md) beschrieben. In der Doku duerfen nur Platzhalter oder nicht-sensitive Strukturbeispiele stehen, keine echten API Keys, Passwoerter oder App Secrets.
+
 ## Lokale Entwicklung
 
 Fuer lokale Entwicklung sollte spaeter eine `.env` oder `.env.local` verwendet werden. Diese Datei wird nicht committed.

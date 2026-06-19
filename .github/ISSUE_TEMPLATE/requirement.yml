@@ -1,9 +1,17 @@
 name: Requirement
 description: Fachliche oder technische Anforderung erfassen
-title: "[REQ] "
+title: "[M?-???] [REQ] "
 labels:
   - "type: requirement"
 body:
+  - type: input
+    id: order
+    attributes:
+      label: Reihenfolge
+      description: Reihenfolge innerhalb des Milestones, z. B. M1-040.
+      placeholder: M1-040
+    validations:
+      required: true
   - type: textarea
     id: goal
     attributes:
@@ -54,4 +62,3 @@ body:
         - niedrig
     validations:
       required: true
-

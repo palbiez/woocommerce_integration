@@ -1,9 +1,17 @@
 name: Task
 description: Konkrete Umsetzungsaufgabe erfassen
-title: "[TASK] "
+title: "[M?-???] [TASK] "
 labels:
   - "type: task"
 body:
+  - type: input
+    id: order
+    attributes:
+      label: Reihenfolge
+      description: Reihenfolge innerhalb des Milestones, z. B. M1-030.
+      placeholder: M1-030
+    validations:
+      required: true
   - type: textarea
     id: work
     attributes:
@@ -26,4 +34,3 @@ body:
     attributes:
       label: Referenzen
       description: Links zu APIs, Dateien oder Folge-Issues.
-

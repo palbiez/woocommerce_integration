@@ -109,6 +109,26 @@ Empfohlener Weg:
 
 Bei 25 bis 100 Produkten ist der Umfang klein genug fuer eine kontrollierte eigene Umsetzung, aber gross genug, dass man Mapping, Logs und Fehlerbehandlung von Anfang an sauber bauen sollte.
 
+## Praktische Arbeitsreihenfolge
+
+Die Umsetzung wird ueber GitHub Milestones gesteuert. Innerhalb jedes Milestones haben Issues einen festen Prefix im Titel, z. B. `M1-010`, `M1-020`, `M1-030`.
+
+Arbeitsregel:
+
+1. Immer mit dem kleinsten offenen Prefix im aktuellen Milestone starten.
+2. `Decision`-Issues vor den davon abhaengigen `Task`-Issues abschliessen.
+3. Blockierte Issues mit `status: blocked` markieren und den naechsten nicht-blockierten Task im selben Milestone bearbeiten.
+4. Erst in den naechsten Milestone wechseln, wenn kritische und hohe Aufgaben des aktuellen Milestones abgeschlossen oder bewusst verschoben sind.
+
+Die detaillierte Reihenfolge pro Milestone steht in [docs/github-tracking.md](docs/github-tracking.md).
+
+Aktueller Startpunkt:
+
+1. `M0-010`: Zugangsdaten rotieren und Secret-Konzept festlegen.
+2. `M0-020`: README und Projektgrundlage finalisieren.
+3. `M0-030`: Zielarchitektur ohne Docker bestaetigen.
+4. Danach mit `M1-010`: WooCommerce REST API Zugriff testen.
+
 ## Zielarchitektur fuer eigene Umsetzung
 
 Vorschlag:

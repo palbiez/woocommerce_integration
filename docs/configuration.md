@@ -1,0 +1,102 @@
+# Konfiguration
+
+Stand: 19.06.2026
+
+## Format
+
+Die lokale `config.cfg` verwendet INI-Syntax. Das Format ist bewusst einfach gehalten:
+
+- Sections stehen in eckigen Klammern, z. B. `[AppData_server]`
+- Werte werden mit `Key = Value` gesetzt
+- Kommentare koennen mit `#` oder `;` beginnen
+- Schluessel sind fuer Python `configparser` standardmaessig case-insensitive
+
+Die Datei enthaelt produktive Zugangsdaten und wird nicht committed. Sie ist in `.gitignore` eingetragen.
+
+## Erwartete Sections
+
+```ini
+[Wordpress]
+Url = https://shop.mrsdaui.de
+Username = Integration
+AppPassword = ...
+
+[Woocommerce]
+Url = https://shop.mrsdaui.de
+ApiKey = ...
+ApiSecret = ...
+
+[EtsyAPI]
+AppName = integration-woocommerce
+KeyString = ...
+Secret = ...
+ShopId =
+
+[Server]
+Ip = 78.47.204.164
+Username = root
+KeyFile = hetzner
+
+[AppData_server]
+Username = etsy_integration
+Password = ...
+Path = /mnt/wci/woocommerce_integration/
+Port = 6001
+Domain = integration.mrsdaui.de
+ExternalPort = 8443
+BindHost = 127.0.0.1
+SiteName = wci
+CertbotEmail =
+CertbotStaging = false
+```
+
+## Reverse Proxy
+
+Das Script [`scripts/setup-reverse-proxy-tls.sh`](../scripts/setup-reverse-proxy-tls.sh) liest seine Werte aus `[AppData_server]`.
+
+| Key | Bedeutung |
+| --- | --- |
+| `Domain` | Externer Hostname, z. B. `integration.mrsdaui.de` |
+| `Port` | Lokaler Upstream-Port der App |
+| `ExternalPort` | Oeffentlicher HTTPS-Port von Nginx, aktuell `8443` |
+| `BindHost` | Lokale Upstream-Adresse, standardmaessig `127.0.0.1` |
+| `SiteName` | Name fuer Nginx-Site-Datei und Logs |
+| `CertbotEmail` | Optionale E-Mail fuer Let's Encrypt |
+| `CertbotStaging` | `true` fuer Staging-Test, sonst `false` |
+
+Mit den aktuellen Werten ergibt sich:
+
+```text
+https://integration.mrsdaui.de:8443 -> http://127.0.0.1:6001
+```
+
+Das Script akzeptiert keine Setup-Argumente mehr. Der normale Aufruf auf dem Server ist:
+
+```bash
+sudo bash scripts/setup-reverse-proxy-tls.sh
+```
+
+Falls die Konfigurationsdatei an einem anderen Pfad liegt:
+
+```bash
+sudo CONFIG_FILE=/etc/wci/config.cfg bash scripts/setup-reverse-proxy-tls.sh
+```
+
+## Lesen in Python
+
+```python
+import configparser
+
+config = configparser.ConfigParser()
+config.read("config.cfg", encoding="utf-8")
+
+domain = config.get("AppData_server", "Domain")
+upstream_port = config.getint("AppData_server", "Port")
+external_port = config.getint("AppData_server", "ExternalPort")
+```
+
+## Lesen in Shell-Scripts
+
+Bash hat keinen eingebauten INI-Parser. Fuer einfache Scripts sollte eine kleine Parser-Funktion wie im Reverse-Proxy-Script verwendet werden. Dort werden Kommentare, Sections und `Key = Value` sauber behandelt.
+
+Direktes `source config.cfg` ist nicht geeignet, weil INI-Sections keine gueltige Shell-Syntax sind und Secret-Werte Leerzeichen enthalten koennen.
