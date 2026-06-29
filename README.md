@@ -78,6 +78,8 @@ Der Reverse-Proxy- und TLS-Ansatz ist in [docs/reverse-proxy-tls.md](docs/revers
 
 Die Python-Skripte fuer Milestone M1 sind in [docs/m1-python-scripts.md](docs/m1-python-scripts.md) dokumentiert.
 
+Die persistente Mapping-Datenbank fuer M2 ist in [docs/m2-mapping-db.md](docs/m2-mapping-db.md) dokumentiert. Das Initialisierungsskript liegt unter [scripts/py/m2_mapping_db.py](scripts/py/m2_mapping_db.py).
+
 ## Secrets
 
 Produktive Zugangsdaten, API-Keys, Passwoerter und SSH-Schluessel duerfen nicht in Git committed werden.
