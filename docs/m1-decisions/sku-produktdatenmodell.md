@@ -19,9 +19,9 @@ Das bedeutet:
 - Jede verkaufbare Einheit bekommt genau eine stabile SKU.
 - WooCommerce Product ID und Variation ID werden nicht fachlich interpretiert, sondern nur technisch gespeichert.
 - Etsy Listing ID, Inventory Product ID und Offering ID werden dauerhaft gemappt.
-- Bundles bekommen eigene Verkaufs-SKU plus separate Komponentenliste.
+- Bundles werden in M1 nicht technisch modelliert; betroffene Artikel bleiben Einzelprodukte, Preisvorteile laufen ueber Gutschein/Rabatt.
 - Personalisierung veraendert nicht die SKU, sondern wird als Bestellpositions-Metadaten gespeichert.
-- Made-to-Order veraendert nicht die SKU, sondern bekommt eigene Produktions-/Lieferzeitfelder.
+- Made-to-Order veraendert nicht die SKU; in M1 steckt die laengere Bearbeitungszeit im abweichenden Versandprofil.
 
 ## Warum diese Entscheidung sinnvoll ist
 
@@ -74,29 +74,28 @@ Pflicht:
 - Variantenattribute werden normalisiert, z. B. `Farbe`, `Groesse`, `Material`.
 - Eine Variante ohne SKU darf nicht automatisch importiert werden.
 
-### Bundles
+### Bundles und Sets
 
 Regel:
 
 ```text
-Bundle = eigene Verkaufs-SKU
-Komponenten = eigene Komponenten-SKUs mit Menge
+In M1 keine technische Bundle-SKU.
+Artikel bleiben einzelne Produkte; Preisvorteile laufen ueber Gutschein/Rabatt.
 ```
 
 Beispiel:
 
 ```text
-Bundle-SKU: MRS-SET-BABY-01
-Komponenten:
-- MRS-CARD-BABY x 1
-- MRS-STICKER-HEART x 2
+Produkt 1: MRS-CARD-BABY
+Produkt 2: MRS-STICKER-HEART
+Rabatt: Gutschein oder Preisaktion
 ```
 
 Pflicht:
 
-- Bundle-SKU darf nicht gleichzeitig als physischer Komponentenartikel verwendet werden.
-- Komponentenbestand wird spaeter beim Bestandsabgleich separat reduziert.
-- Bundle-Zusammensetzung gehoert in die eigene Integration bzw. Mapping-Tabelle, nicht nur in Beschreibungstext.
+- Keine zusaetzliche Bundle-SKU fuer M1 erzeugen.
+- Bestand bleibt auf Einzelprodukt-/Variantenebene.
+- Etsy-Set- oder Bundle-Kandidaten werden spaeter in der Import-Preview als `needs_review` markiert, falls sie nicht sauber als Einzelprodukte plus Rabatt abbildbar sind.
 
 ### Personalisierte Produkte
 
@@ -128,14 +127,15 @@ Pflicht:
 Regel:
 
 ```text
-SKU bleibt Artikel-SKU; Produktionsstatus und Lieferzeit sind separate Felder.
+SKU bleibt Artikel-SKU; Made-to-Order wird in M1 ueber Versandprofil und Bestandspuffer behandelt.
 ```
 
 Pflicht:
 
-- Made-to-Order wird nicht als unendlicher Lagerbestand behandelt.
-- Lieferzeit/Produktionszeit wird als Produkt- oder Varianten-Metadatum gepflegt.
-- Bestellungen erhalten spaeter Produktionsstatus, z. B. `new`, `in_production`, `ready_to_ship`.
+- Made-to-Order erzeugt keine neue SKU.
+- Laengere Bearbeitungszeit steckt in einem abweichenden Versandprofil.
+- Bestand kann als Puffer gefuehrt werden, z. B. 10, und nach Versand wieder erhoeht werden.
+- Keine Pflichtfelder fuer `production_group`, `availability_policy` oder Produktionsstatus in M1.
 
 ## Datenmodell
 
@@ -156,10 +156,12 @@ Pflicht:
 
 | Feld | Typ | Pflicht | Zweck |
 | --- | --- | --- | --- |
-| `bundle_sku` | string | ja | Verkaufs-SKU |
-| `component_sku` | string | ja | Komponenten-SKU |
-| `quantity` | decimal | ja | Menge pro Bundle |
-| `stock_policy` | enum | ja | `reduce_component_stock`, `virtual_only` |
+| `bundle_sku` | string | spaeter optional | Verkaufs-SKU fuer echte Bundle-Logik |
+| `component_sku` | string | spaeter optional | Komponenten-SKU |
+| `quantity` | decimal | spaeter optional | Menge pro Bundle |
+| `stock_policy` | enum | spaeter optional | `reduce_component_stock`, `virtual_only` |
+
+Hinweis: Diese Tabelle wird in M1 nicht umgesetzt. Sie bleibt nur als spaetere Erweiterungsoption, falls echte Bundle-Logik notwendig wird.
 
 ### Personalisierungsfelder
 
@@ -179,7 +181,7 @@ Vor WooCommerce-Schreiboperationen:
 - [ ] Jede verkaufbare Einheit hat eine SKU.
 - [ ] Doppelte SKUs sind bereinigt.
 - [ ] Variantenattribute sind normalisiert.
-- [ ] Bundle-Kandidaten sind markiert.
+- [ ] Bundle-/Set-Kandidaten sind als Einzelprodukte plus Rabatt abbildbar oder als `needs_review` markiert.
 - [ ] Personalisierte Produkte sind markiert.
 - [ ] Made-to-Order-Kandidaten sind markiert.
 
@@ -196,15 +198,15 @@ Bitte diese Punkte bestaetigen oder anpassen:
 - [ ] SKU ist der fachliche Primaerschluessel fuer Sync und Dublettenpruefung.
 - [ ] WooCommerce/Etsy IDs werden nur als technische Mapping-IDs gespeichert.
 - [ ] Jede Variante bekommt eine eigene SKU.
-- [ ] Bundles bekommen eigene Verkaufs-SKU plus Komponentenliste.
+- [ ] Bundles werden in M1 nicht technisch modelliert; Preisvorteile laufen ueber Gutschein/Rabatt.
 - [ ] Personalisierung bleibt Order-Line-Meta und erzeugt keine SKU.
-- [ ] Made-to-Order wird ueber Produktions-/Lieferzeitfelder abgebildet, nicht ueber separate SKU je Bestellung.
+- [ ] Made-to-Order wird in M1 ueber abweichendes Versandprofil und Bestandspuffer abgebildet, nicht ueber separate SKU je Bestellung.
 
 ## Offene Fragen
 
 - Gibt es bereits ein existierendes SKU-Schema, das uebernommen werden soll?
 - Sollen SKUs sprechend sein oder nur fortlaufende Artikelnummern?
-- Muessen Bundle-Komponenten einzeln in WooCommerce sichtbar sein?
+- Gibt es spaeter echte Bundle-Faelle, die nicht mit Einzelprodukten plus Rabatt abbildbar sind?
 - Welche Personalisierungsfelder kommen aktuell in Etsy vor?
 - Gibt es Made-to-Order-Produkte mit echtem Komponentenbestand?
 
