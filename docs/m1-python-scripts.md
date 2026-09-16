@@ -148,6 +148,7 @@ python scripts/py/import_preview_to_woocommerce.py --apply --allow-missing-sku
 ## Aktueller Ausfuehrungsstatus
 
 - WooCommerce REST API: erreichbar; am 16.09.2026 wurden Produkte, Varianten-/Bestandsfelder und Bestellungen erfolgreich gelesen. Der Shop war dabei leer.
+- Etsy Seller App Credentials: am 16.09.2026 mit den aktuellen Werten geprueft; der oeffentliche Etsy-Endpoint antwortete mit HTTP 200. `application/users/me` antwortete ohne OAuth erwartungsgemaess mit HTTP 401 (`shops_r` erforderlich).
 - Etsy OAuth: Flow ist implementiert, aber die einmalige Browserfreigabe und Token-Ablage unter `.secrets/etsy_token.json` muss interaktiv durchgefuehrt werden.
 - Der echte Etsy-Analyse-/Importlauf und ein produktiver Schreiblauf werden erst nach dieser OAuth-Freigabe und einer fachlichen SKU-Pruefung ausgefuehrt.
 

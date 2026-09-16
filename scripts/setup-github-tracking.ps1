@@ -285,7 +285,7 @@ OAuth 2.0 Flow fuer Etsy implementieren und Refresh Tokens sicher speichern.
 - [x] Fehlerfaelle werden ohne Secretwerte ausgegeben
 
 ## Ergebnis
-Technischer POC implementiert. Fuer den echten Lauf bitte einmalig `python3 scripts/py/etsy_oauth.py` interaktiv mit Browserfreigabe ausfuehren.
+Technischer POC implementiert. Die aktuellen Seller-App-Credentials wurden am 16.09.2026 geprueft; der API-Key funktioniert. Fuer Shop-/Listingdaten bitte einmalig `python3 scripts/py/etsy_oauth.py` interaktiv mit Browserfreigabe ausfuehren.
 "@
     },
     @{

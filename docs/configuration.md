@@ -50,6 +50,8 @@ CertbotEmail =
 CertbotStaging = false
 ```
 
+Bei einer Etsy **Seller App** sind `KeyString` und `Secret` die App-Zugangsdaten. Jede Etsy-API-Anfrage verwendet daraus den Header `x-api-key: KeyString:Secret`. Seller-/Shopdaten und Schreibzugriffe benoetigen zusaetzlich einen OAuth-2.0-Token mit den erforderlichen Scopes. `ShopId` kann leer bleiben, wenn sie nach OAuth ueber `application/users/me` ermittelt wird.
+
 ## Reverse Proxy
 
 Das Script [`scripts/setup-reverse-proxy-tls.sh`](../scripts/setup-reverse-proxy-tls.sh) liest seine Werte aus `[AppData_server]`.
