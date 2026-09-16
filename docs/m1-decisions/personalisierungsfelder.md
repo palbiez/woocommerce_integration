@@ -1,8 +1,10 @@
 # M1-050 WooCommerce Erweiterung fuer Personalisierungsfelder
 
-Status: vorbereitet zur Entscheidung
+Status: entschieden fuer M1, technische Plugin-Pruefung vor Produktivbetrieb erforderlich
 
 ## Entscheidung
+
+Fuer den Start wird `Extra Product Options For WooCommerce | Custom Product Addons and Fields` von ThemeHigh als kostenlose Loesung fuer kundennahe Produktfelder eingesetzt. Interne Produkt-/Produktionsdaten werden als WooCommerce-Metadaten bzw. Custom Fields gepflegt. Die Integrationsschicht normalisiert Add-on-Werte aus den Bestellpositions-Metadaten und bleibt unabhaengig vom Plugin-Feldnamen.
 
 Welche WooCommerce-Erweiterung oder Eigenlogik bildet personalisierte Produktfelder ab?
 

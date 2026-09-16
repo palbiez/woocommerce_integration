@@ -141,6 +141,15 @@ python scripts/py/import_preview_to_woocommerce.py --apply --allow-missing-sku
 - Etsy Tokens liegen unter `.secrets/`.
 - API-Ergebnisse, Analysen und Import-Previews liegen unter `data/`.
 - Der WooCommerce-Import schreibt erst mit `--apply`.
+- Ein erneuter `--apply`-Lauf erkennt bereits importierte Listings ueber `_etsy_listing_id` und aktualisiert Produkt/Varianten statt Duplikate anzulegen.
+- Variable Produkte erhalten aus den Etsy-Varianten aggregierte WooCommerce-Attribute; Varianten werden ueber SKU wiedererkannt.
+- Ein leerer WooCommerce-Bestand gilt als erfolgreicher API-Read, nicht als fehlgeschlagener Check.
+
+## Aktueller Ausfuehrungsstatus
+
+- WooCommerce REST API: erreichbar; am 16.09.2026 wurden Produkte, Varianten-/Bestandsfelder und Bestellungen erfolgreich gelesen. Der Shop war dabei leer.
+- Etsy OAuth: Flow ist implementiert, aber die einmalige Browserfreigabe und Token-Ablage unter `.secrets/etsy_token.json` muss interaktiv durchgefuehrt werden.
+- Der echte Etsy-Analyse-/Importlauf und ein produktiver Schreiblauf werden erst nach dieser OAuth-Freigabe und einer fachlichen SKU-Pruefung ausgefuehrt.
 
 ## API-Referenzen
 

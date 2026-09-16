@@ -12,7 +12,9 @@ from common import (
     output_dir,
     read_json,
     timestamp,
+    wc_get,
     wc_post,
+    wc_put,
     write_json,
 )
 
@@ -35,6 +37,22 @@ def validate_preview(preview: dict[str, Any], allow_missing_sku: bool) -> None:
             "Preview enthaelt fehlende SKUs. Erst korrigieren oder bewusst --allow-missing-sku setzen. "
             f"Listings: {', '.join(map(str, missing[:20]))}"
         )
+
+
+def existing_product_by_listing_id(wc: Any, listing_id: Any) -> dict[str, Any] | None:
+    """Find an earlier import by its private Etsy listing metadata."""
+    page = 1
+    while True:
+        products = wc_get(wc, "products", {"per_page": 100, "page": page})
+        if not products:
+            return None
+        for product in products:
+            for meta in product.get("meta_data") or []:
+                if meta.get("key") == "_etsy_listing_id" and str(meta.get("value")) == str(listing_id):
+                    return product
+        if len(products) < 100:
+            return None
+        page += 1
 
 
 def run() -> None:
@@ -74,22 +92,41 @@ def run() -> None:
         }
 
         if args.apply:
-            created = wc_post(wc, "products", product_payload)
+            existing = existing_product_by_listing_id(wc, item["listing_id"])
+            if existing:
+                created = wc_put(wc, f"products/{existing['id']}", product_payload)
+                result["action"] = "updated"
+            else:
+                created = wc_post(wc, "products", product_payload)
+                result["action"] = "created"
             product_id = created["id"]
             result["woocommerce_product_id"] = product_id
+            existing_variations = {}
+            if existing and created.get("type") == "variable":
+                current = wc_get(wc, f"products/{product_id}/variations", {"per_page": 100, "page": 1})
+                existing_variations = {str(v.get("sku")): v for v in current or [] if v.get("sku")}
             for variation in item.get("variations") or []:
-                created_variation = wc_post(
-                    wc,
-                    f"products/{product_id}/variations",
-                    clean_payload(variation),
-                )
+                sku = str(variation.get("sku") or "")
+                if sku in existing_variations:
+                    variation_id = existing_variations[sku]["id"]
+                    created_variation = wc_put(
+                        wc, f"products/{product_id}/variations/{variation_id}", clean_payload(variation)
+                    )
+                    action = "updated"
+                else:
+                    created_variation = wc_post(
+                        wc, f"products/{product_id}/variations", clean_payload(variation)
+                    )
+                    action = "created"
                 result["variations"].append(
                     {
                         "sku": variation.get("sku"),
                         "woocommerce_variation_id": created_variation.get("id"),
+                        "action": action,
                     }
                 )
         else:
+            result["action"] = "dry-run"
             result["variations"] = [
                 {"sku": variation.get("sku"), "woocommerce_variation_id": None}
                 for variation in item.get("variations") or []

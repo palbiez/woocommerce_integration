@@ -39,6 +39,11 @@ def product_sku(product: dict[str, Any], listing_id: Any) -> str:
     return f"TODO-SKU-{listing_id}"
 
 
+def has_missing_sku(products: list[dict[str, Any]]) -> bool:
+    """Return true when any sellable Etsy inventory product has no SKU."""
+    return not products or any(not str(product.get("sku") or "").strip() for product in products)
+
+
 def variation_attributes(product: dict[str, Any]) -> list[dict[str, str]]:
     attributes: list[dict[str, str]] = []
     for value in product.get("property_values") or []:
@@ -61,6 +66,7 @@ def listing_to_preview(item: dict[str, Any]) -> dict[str, Any]:
     first_offering = (first_product.get("offerings") or [{}])[0]
     base_price = money_to_string(first_offering.get("price") or listing.get("price"))
     base_stock = first_offering.get("quantity")
+    missing_sku = has_missing_sku(products)
     product_payload = {
         "name": listing.get("title"),
         "type": "variable" if is_variable else "simple",
@@ -78,6 +84,7 @@ def listing_to_preview(item: dict[str, Any]) -> dict[str, Any]:
     }
     variations = []
     if is_variable:
+        attributes: dict[str, set[str]] = {}
         for product in products:
             offering = (product.get("offerings") or [{}])[0]
             variations.append(
@@ -94,13 +101,19 @@ def listing_to_preview(item: dict[str, Any]) -> dict[str, Any]:
                     ],
                 }
             )
+            for attribute in variation_attributes(product):
+                attributes.setdefault(attribute["name"], set()).add(attribute["option"])
+        product_payload["attributes"] = [
+            {"name": name, "visible": True, "variation": True, "options": sorted(options)}
+            for name, options in sorted(attributes.items())
+        ]
 
     return {
         "listing_id": listing_id,
         "source_title": listing.get("title"),
         "source_url": listing.get("url"),
         "special_cases": analysis.get("special_cases") or "",
-        "has_missing_sku": "missing_sku" in str(analysis.get("special_cases") or ""),
+        "has_missing_sku": missing_sku,
         "product": product_payload,
         "variations": variations,
     }

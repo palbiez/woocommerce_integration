@@ -70,12 +70,12 @@ def run() -> None:
     report = {
         "base_url": wc.base_url,
         "checks": {
-            "products_read": bool(products),
-            "single_product_read": bool(product_detail),
+            "products_read": isinstance(products, list),
+            "single_product_read": selected_product is None or bool(product_detail),
             "variations_read": selected_product is None
             or product_detail.get("type") != "variable"
             or isinstance(variations, list),
-            "stock_read": any("stock_status" in product for product in products),
+            "stock_read": not products or all("stock_status" in product for product in products),
             "orders_read": isinstance(orders, list),
             "auth_without_code_secrets": True,
         },

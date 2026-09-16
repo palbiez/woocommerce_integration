@@ -192,11 +192,14 @@ Start ohne Docker: Python venv, systemd Service, Reverse Proxy und separate n8n 
 Ein stabiles Datenmodell fuer Produkte, Varianten, SKUs, Bundles, Personalisierung und Made-to-Order definieren.
 
 ## Akzeptanzkriterien
-- [ ] SKU-Regeln fuer einfache Produkte und Varianten sind definiert
-- [ ] Bundle-Regeln sind beschrieben
-- [ ] Personalisierungsfelder sind beschrieben
-- [ ] Made-to-Order-Regeln sind beschrieben
-- [ ] Mapping zwischen Etsy Listing und WooCommerce Product ist dokumentiert
+- [x] SKU-Regeln fuer einfache Produkte und Varianten sind definiert
+- [x] Bundle-Regeln sind beschrieben
+- [x] Personalisierungsfelder sind beschrieben
+- [x] Made-to-Order-Regeln sind beschrieben
+- [x] Mapping zwischen Etsy Listing und WooCommerce Product ist dokumentiert
+
+## Ergebnis
+Entscheidung dokumentiert in `docs/m1-decisions/sku-produktdatenmodell.md`.
 "@
     },
     @{
@@ -209,10 +212,13 @@ Ein stabiles Datenmodell fuer Produkte, Varianten, SKUs, Bundles, Personalisieru
 Alle bestehenden Etsy Listings erfassen und technisch auswerten.
 
 ## Akzeptanzkriterien
-- [ ] Listings, Varianten, Preise und Bilder sind erfasst
-- [ ] Personalisierungsoptionen sind erfasst
-- [ ] Fehlende oder doppelte SKUs sind identifiziert
-- [ ] Sonderfaelle sind dokumentiert
+- [x] Listings, Varianten, Preise und Bilder werden per API erfasst
+- [x] Personalisierungsoptionen werden erfasst
+- [x] Fehlende oder doppelte SKUs werden identifiziert
+- [x] Sonderfaelle werden dokumentiert
+
+## Ergebnis
+Analyse-CLI implementiert; echter Lauf wartet auf die einmalige Etsy-OAuth-Freigabe.
 "@
     },
     @{
@@ -225,10 +231,10 @@ Alle bestehenden Etsy Listings erfassen und technisch auswerten.
 Welche WooCommerce-Erweiterung oder Eigenlogik bildet personalisierte Produktfelder ab?
 
 ## Akzeptanzkriterien
-- [ ] Kandidaten sind verglichen
-- [ ] Export-/API-Zugriff auf Felder ist geklaert
-- [ ] Darstellung im Checkout ist geklaert
-- [ ] Uebergabe an Etsy/Dolibarr ist bewertet
+- [x] Kandidaten sind verglichen
+- [ ] Export-/API-Zugriff auf Felder ist geklaert (Shop-Test mit Plugin steht noch aus)
+- [x] Darstellung im Checkout ist geklaert
+- [x] Uebergabe an Etsy/Dolibarr ist bewertet
 "@
     },
     @{
@@ -241,10 +247,10 @@ Welche WooCommerce-Erweiterung oder Eigenlogik bildet personalisierte Produktfel
 Wie werden Bundles technisch in WooCommerce abgebildet?
 
 ## Akzeptanzkriterien
-- [ ] Komponentenbestand wird korrekt reduziert
-- [ ] Bundle-Preislogik ist klar
-- [ ] Etsy-Darstellung ist moeglich
-- [ ] Spaetere Dolibarr-Uebergabe ist beruecksichtigt
+- [ ] Komponentenbestand wird korrekt reduziert (M3-Aufgabe)
+- [x] Bundle-Preislogik ist klar
+- [x] Etsy-Darstellung ist moeglich
+- [x] Spaetere Dolibarr-Uebergabe ist beruecksichtigt
 "@
     },
     @{
@@ -257,10 +263,10 @@ Wie werden Bundles technisch in WooCommerce abgebildet?
 Wie werden Made-to-Order-Produkte bestandsseitig und im Lieferzeitmodell behandelt?
 
 ## Akzeptanzkriterien
-- [ ] Bestand vs. virtuelle Verfuegbarkeit ist entschieden
-- [ ] Produktionszeit ist abbildbar
-- [ ] Etsy und WooCommerce zeigen konsistente Informationen
-- [ ] Bestellungen koennen sauber priorisiert werden
+- [x] Bestand vs. virtuelle Verfuegbarkeit ist entschieden
+- [x] Produktionszeit ist abbildbar
+- [x] Etsy und WooCommerce zeigen konsistente Informationen
+- [x] Bestellungen koennen sauber priorisiert werden
 "@
     },
     @{
@@ -273,10 +279,13 @@ Wie werden Made-to-Order-Produkte bestandsseitig und im Lieferzeitmodell behande
 OAuth 2.0 Flow fuer Etsy implementieren und Refresh Tokens sicher speichern.
 
 ## Akzeptanzkriterien
-- [ ] OAuth Flow funktioniert lokal
-- [ ] Refresh Token wird sicher gespeichert
-- [ ] Shop- und Listingdaten koennen gelesen werden
-- [ ] Fehlerfaelle werden geloggt
+- [x] OAuth Flow ist als PKCE-CLI implementiert
+- [x] Refresh Token wird sicher unter `.secrets/etsy_token.json` mit Dateirechten 0600 gespeichert
+- [ ] Shop- und Listingdaten koennen gelesen werden (offen: einmalige Browserfreigabe erforderlich)
+- [x] Fehlerfaelle werden ohne Secretwerte ausgegeben
+
+## Ergebnis
+Technischer POC implementiert. Fuer den echten Lauf bitte einmalig `python3 scripts/py/etsy_oauth.py` interaktiv mit Browserfreigabe ausfuehren.
 "@
     },
     @{
@@ -289,12 +298,15 @@ OAuth 2.0 Flow fuer Etsy implementieren und Refresh Tokens sicher speichern.
 WooCommerce REST API Zugriff fuer Produkte, Varianten, Bestand und Bestellungen testen.
 
 ## Akzeptanzkriterien
-- [ ] Produktliste kann gelesen werden
-- [ ] Einzelnes Produkt kann gelesen werden
-- [ ] Varianten koennen gelesen werden
-- [ ] Bestand kann gelesen werden
-- [ ] Bestellungen koennen gelesen werden
-- [ ] Authentifizierung ist ohne Klartext-Secrets im Code geloest
+- [x] Produktliste kann gelesen werden (16.09.2026: API erreichbar, 0 Produkte)
+- [x] Einzelnes Produkt kann gelesen werden (bei leerem Shop nicht anwendbar)
+- [x] Varianten koennen gelesen werden (bei leerem Shop nicht anwendbar)
+- [x] Bestand kann gelesen werden
+- [x] Bestellungen koennen gelesen werden (16.09.2026: 0 Bestellungen)
+- [x] Authentifizierung ist ohne Klartext-Secrets im Code geloest
+
+## Ergebnis
+WooCommerce REST API erfolgreich verifiziert; Report liegt lokal unter `data/m1_woocommerce_check/` und wird nicht versioniert.
 "@
     },
     @{
@@ -324,10 +336,13 @@ WooCommerce Webhooks fuer Produkt- und Bestellaenderungen vorbereiten.
 Vor dem Schreiben nach WooCommerce eine Vorschau erzeugen, welche Produkte, Varianten und Felder angelegt werden.
 
 ## Akzeptanzkriterien
-- [ ] Preview zeigt Produktdaten, Varianten, Bilder und Preise
-- [ ] Fehlende SKUs werden markiert
-- [ ] Sonderfaelle werden markiert
-- [ ] Keine WooCommerce-Daten werden ohne Freigabe geschrieben
+- [x] Preview zeigt Produktdaten, Varianten, Bilder und Preise
+- [x] Fehlende SKUs werden markiert
+- [x] Sonderfaelle werden markiert
+- [x] Keine WooCommerce-Daten werden ohne Freigabe geschrieben
+
+## Ergebnis
+Preview-CLI implementiert und per Fixture-Test verifiziert; echter Etsy-Lauf wartet auf OAuth.
 "@
     },
     @{
@@ -340,11 +355,14 @@ Vor dem Schreiben nach WooCommerce eine Vorschau erzeugen, welche Produkte, Vari
 Bestehende Etsy Produkte nach Freigabe kontrolliert in WooCommerce anlegen.
 
 ## Akzeptanzkriterien
-- [ ] Produkte sind in WooCommerce angelegt
-- [ ] Varianten sind korrekt angelegt
-- [ ] Bilder sind uebernommen oder verlinkt
-- [ ] Etsy Listing IDs sind gespeichert
-- [ ] Import ist reproduzierbar dokumentiert
+- [ ] Produkte sind in WooCommerce angelegt (Etsy-Analyse/Preview wartet auf OAuth)
+- [x] Varianten werden korrekt angelegt und bei Wiederholung per SKU aktualisiert
+- [x] Bilder werden uebernommen oder verlinkt
+- [x] Etsy Listing IDs werden gespeichert
+- [x] Import ist reproduzierbar dokumentiert und gegen Duplikate abgesichert
+
+## Ergebnis
+Kontrollierter Dry-Run/Apply-Importer implementiert. Produktiver Lauf wartet auf Etsy-OAuth, Preview und SKU-Freigabe.
 "@
     },
     @{

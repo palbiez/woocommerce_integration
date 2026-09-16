@@ -191,6 +191,16 @@ def wc_post(wc: WooConfig, endpoint: str, payload: dict[str, Any]) -> Any:
     )
 
 
+def wc_put(wc: WooConfig, endpoint: str, payload: dict[str, Any]) -> Any:
+    return request_json(
+        "PUT",
+        wc_url(wc, endpoint),
+        json=payload,
+        auth=(wc.api_key, wc.api_secret),
+        expected=(200, 201),
+    )
+
+
 def etsy_api_key_header(etsy: EtsyConfig) -> str:
     override = os.environ.get("ETSY_API_KEY_HEADER", "").strip()
     if override:
