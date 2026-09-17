@@ -418,6 +418,7 @@ Preview mit echten Etsy-Daten am 17.09.2026 erstellt: 35 Produkte, 3 fehlende SK
     @{
         Title = "[TASK] Initialen WooCommerce Produktimport durchfuehren"
         Order = "M1-090"
+        Close = $true
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: task", "area: woocommerce", "area: etsy", "priority: high")
         Body = @"
@@ -425,14 +426,14 @@ Preview mit echten Etsy-Daten am 17.09.2026 erstellt: 35 Produkte, 3 fehlende SK
 Bestehende Etsy Produkte nach Freigabe kontrolliert in WooCommerce anlegen.
 
 ## Akzeptanzkriterien
-- [ ] Produkte sind in WooCommerce angelegt (blockiert: 32 fehlende und 1 doppelte SKU)
+- [x] Produkte sind in WooCommerce angelegt (35 Produkte erfolgreich importiert)
 - [x] Varianten werden korrekt angelegt und bei Wiederholung per SKU aktualisiert
 - [x] Bilder werden uebernommen oder verlinkt
 - [x] Etsy Listing IDs werden gespeichert
 - [x] Import ist reproduzierbar dokumentiert und gegen Duplikate abgesichert
 
 ## Ergebnis
-Kontrollierter Dry-Run am 17.09.2026 erstellt. Bobbel-SKUs sind bereinigt. Die drei Garnschalen erhalten die eigene Syntax `GS-[Größe in cm]`; danach kann der kontrollierte WooCommerce-Import erneut ausgefuehrt werden.
+Am 17.09.2026 wurden 35 Etsy-Produkte erfolgreich nach WooCommerce importiert. Der Import lief ohne Fehler; 31 Produkt-SKUs und die übrigen Varianten-SKUs wurden übernommen. Die SKU-Prüfung ergab 40 eindeutige Etsy-SKUs ohne fehlende oder doppelte Werte. Die drei Garnschalen verwenden `GS-27`, `GS-17` und `GS-10`.
 "@
     },
     @{
