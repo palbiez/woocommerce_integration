@@ -249,7 +249,10 @@ Blockiert den echten Abschluss von M1-020 und damit M1-030/M1-080/M1-090.
 - URL laut Konfiguration: `https://integration.mrs-daui.de:8443/oauth/etsy/callback`
 - Eintrag im Etsy Developer Portal wurde vom Betreiber bestaetigt.
 - Externer DNS-Test: `integration.mrs-daui.de` loest auf `78.47.204.164` auf.
-- HTTP-Test: Port `8443` ist aktuell nicht erreichbar; Nginx-Konfiguration/Firewall/Service muss auf dem Server aktiviert werden.
+- TLS-Test: Let’s-Encrypt-Zertifikat fuer `integration.mrs-daui.de` ist aktiv.
+- Nginx-Test: Port `8443` ist erreichbar; der projektversionierte VHost ist per Symlink aktiviert.
+- Route-Test: Callback und Webhook werden korrekt geroutet; aktuell `502`, weil auf `127.0.0.1:6001` noch kein App-Listener laeuft.
+- Offen: Integrationsapp mit den beiden Routen starten und danach OAuth-/Webhook-Test wiederholen.
 "@
     },
     @{
@@ -316,7 +319,7 @@ OAuth 2.0 Flow fuer Etsy implementieren und Refresh Tokens sicher speichern.
 - [x] Fehlerfaelle werden ohne Secretwerte ausgegeben
 
 ## Ergebnis
-Technischer POC implementiert. Die aktuellen Seller-App-Credentials wurden geprueft; der API-Key funktioniert. OAuth-Link mit der registrierten Redirect-URI wurde am 17.09.2026 erzeugt. Die Token-Erzeugung bleibt offen, bis DNS/HTTPS fuer M1-025 erreichbar ist.
+Technischer POC implementiert. Die aktuellen Seller-App-Credentials wurden geprueft; der API-Key funktioniert. Die registrierte Redirect-URI ist jetzt per DNS, TLS und Nginx erreichbar. Die Token-Erzeugung bleibt offen, bis der App-Listener auf `127.0.0.1:6001` bereitsteht.
 "@
     },
     @{
