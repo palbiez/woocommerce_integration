@@ -209,6 +209,7 @@ Entscheidung dokumentiert in `docs/m1-decisions/sku-produktdatenmodell.md`.
     @{
         Title = "[TASK] Bestehende Etsy Listings per API oder Export analysieren"
         Order = "M1-030"
+        Close = $true
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: task", "area: etsy", "area: data-model", "priority: high")
         Body = @"
@@ -222,7 +223,7 @@ Alle bestehenden Etsy Listings erfassen und technisch auswerten.
 - [x] Sonderfaelle werden dokumentiert
 
 ## Ergebnis
-Analyse-CLI implementiert; echter Lauf wartet auf die einmalige Etsy-OAuth-Freigabe.
+Echter Lauf am 17.09.2026: 35 aktive Listings, 6 SKUs, 32 fehlende SKU-Zuordnungen, 1 doppelte SKU (`GM-450-VV`), 4 Variantenfaelle, 3 personalisierte Produkte und 35 Made-to-Order-Kandidaten.
 "@
     },
     @{
@@ -313,6 +314,7 @@ Wie werden Made-to-Order-Produkte bestandsseitig und im Lieferzeitmodell behande
     @{
         Title = "[TASK] Etsy OAuth und Token-Speicherung als POC bauen"
         Order = "M1-020"
+        Close = $true
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: task", "area: etsy", "area: infra", "priority: high")
         Body = @"
@@ -320,13 +322,13 @@ Wie werden Made-to-Order-Produkte bestandsseitig und im Lieferzeitmodell behande
 OAuth 2.0 Flow fuer Etsy implementieren und Refresh Tokens sicher speichern.
 
 ## Akzeptanzkriterien
-- [x] OAuth Flow ist als PKCE-CLI implementiert
+- [x] OAuth Flow ist als PKCE-Service implementiert
 - [x] Refresh Token wird sicher unter `.secrets/etsy_token.json` mit Dateirechten 0600 gespeichert
-- [ ] Shop- und Listingdaten koennen gelesen werden (offen: einmalige Browserfreigabe erforderlich)
+- [x] Shop- und Listingdaten koennen gelesen werden
 - [x] Fehlerfaelle werden ohne Secretwerte ausgegeben
 
 ## Ergebnis
-Technischer POC implementiert. Die aktuellen Seller-App-Credentials wurden geprueft; der API-Key funktioniert. Die registrierte Redirect-URI ist jetzt per DNS, TLS und Nginx erreichbar. Die Token-Erzeugung bleibt offen, bis der App-Listener auf `127.0.0.1:6001` bereitsteht.
+Technischer POC abgeschlossen. Seller-App-OAuth erfolgreich; Shop-ID `61107659` und Datenabruf funktionieren. Service laeuft auf `127.0.0.1:6001`.
 "@
     },
     @{
@@ -396,6 +398,7 @@ M2-035 stellt die technische Zustellung sicher; M3-030 verarbeitet die Etsy-Best
     @{
         Title = "[TASK] Import-Preview Etsy nach WooCommerce erstellen"
         Order = "M1-080"
+        Close = $true
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: task", "area: etsy", "area: woocommerce", "area: data-model", "priority: high")
         Body = @"
@@ -409,7 +412,7 @@ Vor dem Schreiben nach WooCommerce eine Vorschau erzeugen, welche Produkte, Vari
 - [x] Keine WooCommerce-Daten werden ohne Freigabe geschrieben
 
 ## Ergebnis
-Preview-CLI implementiert und per Fixture-Test verifiziert; echter Etsy-Lauf wartet auf OAuth.
+Preview mit echten Etsy-Daten am 17.09.2026 erstellt: 35 Produkte, 32 fehlende SKUs markiert. Es wurden keine WooCommerce-Daten geschrieben.
 "@
     },
     @{
@@ -422,14 +425,14 @@ Preview-CLI implementiert und per Fixture-Test verifiziert; echter Etsy-Lauf war
 Bestehende Etsy Produkte nach Freigabe kontrolliert in WooCommerce anlegen.
 
 ## Akzeptanzkriterien
-- [ ] Produkte sind in WooCommerce angelegt (Etsy-Analyse/Preview wartet auf OAuth)
+- [ ] Produkte sind in WooCommerce angelegt (blockiert: 32 fehlende und 1 doppelte SKU)
 - [x] Varianten werden korrekt angelegt und bei Wiederholung per SKU aktualisiert
 - [x] Bilder werden uebernommen oder verlinkt
 - [x] Etsy Listing IDs werden gespeichert
 - [x] Import ist reproduzierbar dokumentiert und gegen Duplikate abgesichert
 
 ## Ergebnis
-Kontrollierter Dry-Run/Apply-Importer implementiert. Produktiver Lauf wartet auf Etsy-OAuth, Preview und SKU-Freigabe.
+Kontrollierter Dry-Run am 17.09.2026 erstellt. 35 Produkte sind in der Preview enthalten; ohne `--allow-missing-sku` wird korrekt abgebrochen. Mit `--allow-missing-sku` wurde nur ein Dry-Run ausgefuehrt. Offen: SKU-Bereinigung und fachliche Freigabe vor `--apply`.
 "@
     },
     @{

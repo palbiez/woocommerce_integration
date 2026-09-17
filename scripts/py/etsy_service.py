@@ -23,6 +23,7 @@ from common import (
     request_json,
     save_etsy_token,
     write_json,
+    ScriptError,
 )
 
 
@@ -79,7 +80,10 @@ def discover_shop_id(etsy: Any, token: dict[str, Any]) -> str:
     if not user_id.isdigit():
         raise RuntimeError("Shop-ID konnte aus dem Etsy-OAuth-Token nicht ermittelt werden.")
     shops = etsy_get(etsy, f"application/users/{user_id}/shops", token=token)
-    results = shops.get("results", shops if isinstance(shops, list) else [])
+    if isinstance(shops, dict) and shops.get("shop_id"):
+        results = [shops]
+    else:
+        results = shops.get("results", shops if isinstance(shops, list) else [])
     if not results or not results[0].get("shop_id"):
         raise RuntimeError("Für den Etsy-Seller wurde kein Shop gefunden.")
     return str(results[0]["shop_id"])
@@ -105,14 +109,21 @@ def collect_snapshot(config: Any) -> dict[str, Any]:
         offset += 100
 
     items: list[dict[str, Any]] = []
+    warnings: list[dict[str, Any]] = []
     for listing in listings:
         listing_id = listing["listing_id"]
         inventory = etsy_get(etsy, f"application/listings/{listing_id}/inventory", token=token)
-        images = etsy_get(
-            etsy,
-            f"application/shops/{shop_id}/listings/{listing_id}/images",
-            token=token,
-        )
+        try:
+            images = etsy_get(
+                etsy,
+                f"application/shops/{shop_id}/listings/{listing_id}/images",
+                token=token,
+            )
+        except ScriptError as exc:
+            if "HTTP 404" not in str(exc):
+                raise
+            images = {"results": []}
+            warnings.append({"listing_id": listing_id, "type": "images_not_found"})
         items.append(
             {
                 "listing": listing,
@@ -125,6 +136,7 @@ def collect_snapshot(config: Any) -> dict[str, Any]:
         "collected_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "shop_id": shop_id,
         "listing_count": len(items),
+        "warnings": warnings,
         "items": items,
     }
     write_json(SNAPSHOT_FILE, snapshot)
@@ -219,7 +231,12 @@ class EtsyService(BaseHTTPRequestHandler):
         self.end_headers()
 
     def log_message(self, format: str, *args: Any) -> None:
-        print(f"{self.address_string()} - {format % args}", flush=True)
+        # Never write OAuth codes, state values or webhook query data to logs.
+        request_line = str(args[0]) if args else ""
+        if request_line.startswith('"') and " " in request_line:
+            method, target, *_ = request_line.strip('"').split(" ", 2)
+            request_line = f'"{method} {urllib.parse.urlsplit(target).path} HTTP"'
+        print(f"{self.address_string()} - {request_line}", flush=True)
 
 
 def handle_oauth_callback(self: EtsyService, parsed: Any) -> None:

@@ -15,6 +15,7 @@ from common import (
     output_dir,
     refresh_etsy_token_if_needed,
     resolve_etsy_shop_id,
+    ScriptError,
     timestamp,
     write_csv,
     write_json,
@@ -32,9 +33,9 @@ def iter_active_listings(etsy: Any, token: dict[str, Any], shop_id: str, limit: 
     while True:
         payload = etsy_get(
             etsy,
-            f"application/shops/{shop_id}/listings/active",
+            f"application/shops/{shop_id}/listings",
             token=token,
-            params={"limit": page_size, "offset": offset},
+            params={"state": "active", "limit": page_size, "offset": offset},
         )
         page = payload.get("results", payload if isinstance(payload, list) else [])
         listings.extend(page)
@@ -95,11 +96,16 @@ def run() -> None:
     for listing in listings:
         listing_id = listing["listing_id"]
         inventory = etsy_get(etsy, f"application/listings/{listing_id}/inventory", token=token)
-        images = etsy_get(
-            etsy,
-            f"application/shops/{shop_id}/listings/{listing_id}/images",
-            token=token,
-        )
+        try:
+            images = etsy_get(
+                etsy,
+                f"application/shops/{shop_id}/listings/{listing_id}/images",
+                token=token,
+            )
+        except ScriptError as exc:
+            if "HTTP 404" not in str(exc):
+                raise
+            images = {"results": []}
         skus = extract_inventory_skus(inventory)
         all_skus.extend(skus)
         cases = listing_special_cases(listing, inventory, skus)
