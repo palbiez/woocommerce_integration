@@ -67,6 +67,7 @@ def run() -> None:
     )
     parser.add_argument("--apply", action="store_true", help="Erst mit diesem Flag wird nach WooCommerce geschrieben.")
     parser.add_argument("--limit", type=int, default=0, help="Optional nur die ersten N Produkte verarbeiten.")
+    parser.add_argument("--offset", type=int, default=0, help="Optional ab diesem Preview-Index verarbeiten.")
     parser.add_argument("--allow-missing-sku", action="store_true")
     args = parser.parse_args()
 
@@ -76,6 +77,8 @@ def run() -> None:
     validate_preview(preview, args.allow_missing_sku)
 
     items = preview.get("items") or []
+    if args.offset:
+        items = items[args.offset :]
     if args.limit:
         items = items[: args.limit]
 

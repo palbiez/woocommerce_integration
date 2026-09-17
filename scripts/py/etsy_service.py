@@ -116,7 +116,7 @@ def collect_snapshot(config: Any) -> dict[str, Any]:
         try:
             images = etsy_get(
                 etsy,
-                f"application/shops/{shop_id}/listings/{listing_id}/images",
+                f"application/listings/{listing_id}/images",
                 token=token,
             )
         except ScriptError as exc:

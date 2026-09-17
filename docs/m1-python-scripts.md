@@ -141,6 +141,15 @@ python scripts/py/import_preview_to_woocommerce.py --apply --allow-missing-sku
 - Etsy Tokens liegen unter `.secrets/`.
 - API-Ergebnisse, Analysen und Import-Previews liegen unter `data/`.
 - Der WooCommerce-Import schreibt erst mit `--apply`.
+
+#### Bildmigration
+
+Die Etsy-Bilder werden ueber `GET /application/listings/{listing_id}/images` abgerufen. Die bevorzugte
+Quelle ist `url_fullxfull`, danach werden kleinere Etsy-CDN-Varianten verwendet. Die Preview uebergibt diese
+URLs an WooCommerce als `images[].src`; WooCommerce laedt die Bilder beim Produkt-Create/Update in seine
+Mediathek. Bei langsamen oder einzelnen CDN-Requests kann der Import mit `--offset N --limit M` in kleinen,
+wiederholbaren Bloecken fortgesetzt werden. Bereits importierte Produkte werden ueber `_etsy_listing_id`
+gefunden und aktualisiert.
 - Ein erneuter `--apply`-Lauf erkennt bereits importierte Listings ueber `_etsy_listing_id` und aktualisiert Produkt/Varianten statt Duplikate anzulegen.
 - Variable Produkte erhalten aus den Etsy-Varianten aggregierte WooCommerce-Attribute; Varianten werden ueber SKU wiedererkannt.
 - Ein leerer WooCommerce-Bestand gilt als erfolgreicher API-Read, nicht als fehlgeschlagener Check.
