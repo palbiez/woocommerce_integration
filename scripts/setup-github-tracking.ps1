@@ -129,7 +129,7 @@ foreach ($milestone in $milestones) {
     Ensure-Milestone -Title $milestone.Title -Description $milestone.Description -Existing $existingMilestones
 }
 
-$existingIssues = gh issue list --repo $Repo --state all --limit 500 --json title,number | ConvertFrom-Json
+$existingIssues = gh issue list --repo $Repo --state all --limit 500 --json title,number,state | ConvertFrom-Json
 
 $issues = @(
     @{
