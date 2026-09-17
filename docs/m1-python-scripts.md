@@ -176,10 +176,11 @@ Beispiele und Codes:
 - namenlose Bobbel erhalten eine laufende zweistellige Nummer `01` bis `99`
 - `NV` normaler Verlauf, `SV` sanfter Verlauf, `VV` verrückter Verlauf, `GV` gemischter Verlauf, `TV` Tuchverlauf
 - bei einer echten Kollision wird `-2`, `-3` usw. angehaengt
+- Garnschalen verwenden als eigene Produktgruppe `GS-[Größe in cm]`, z. B. `GS-27`
 
 Der Plan wird mit `python3 scripts/py/etsy_update_skus.py` nur angezeigt. Erst `--apply` schreibt die eindeutig ableitbaren Bobbel-SKUs nach Etsy. Vor `--apply` muessen die Vorschlaege fachlich geprueft werden.
 
-Am 17.09.2026 wurden 31 fehlende bzw. kollidierende Bobbel-SKUs nach Etsy geschrieben. Die anschliessende Live-Analyse ergab 37 eindeutige SKUs und keine Duplikate. Drei personalisierte Garnschalen bleiben ohne SKU, da sie nicht zur Bobbel-Syntax gehoeren.
+Am 17.09.2026 wurden 31 fehlende bzw. kollidierende Bobbel-SKUs nach Etsy geschrieben. Die drei Garnschalen werden separat als `GS-[Größe in cm]` gepflegt.
 
 ## Aktueller Ausfuehrungsstatus
 

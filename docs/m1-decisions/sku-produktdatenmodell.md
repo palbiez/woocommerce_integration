@@ -22,7 +22,7 @@ Verlaufsarten:
 
 Die Lauflänge wird in Metern angegeben; bei Angaben wie `2x225m` wird die Gesamtlaenge `450` verwendet. Bei einer echten Kollision wird eine Duplikatnummer angehaengt, z. B. `ES-1500-SV-2`.
 
-Die Syntax gilt fuer Bobbel und Bobbel-Varianten. Andere Produktgruppen, aktuell insbesondere Garnschalen, erhalten keine automatisch erfundene Bobbel-SKU; dafuer wird bei Bedarf eine eigene Produktgruppen-Syntax beschlossen.
+Die Syntax gilt fuer Bobbel und Bobbel-Varianten. Garnschalen erhalten als eigene Produktgruppe die Syntax `GS-[Größe in cm]`, aktuell also `GS-27`, `GS-17` und `GS-10`. Spaetere weitere Varianten werden bei Groessen-/Variantenkollisionen mit einer eindeutigen Erweiterung dokumentiert.
 
 Status: vorbereitet zur Entscheidung
 

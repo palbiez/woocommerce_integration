@@ -80,6 +80,14 @@ def is_bobbel(item: dict[str, Any]) -> bool:
     return "bobbel" in title or "farbverlaufsgarn" in title
 
 
+def garnschale_size_code(item: dict[str, Any]) -> str | None:
+    title = str(item["listing"].get("title") or "")
+    if "garnschale" not in title.lower() and "yarn bowl" not in title.lower():
+        return None
+    match = re.search(r"\((\d+)\s*cm\)", title, re.I)
+    return f"GS-{match.group(1)}" if match else None
+
+
 def plan_skus(analysis: dict[str, Any]) -> list[dict[str, Any]]:
     existing: Counter[str] = Counter()
     for item in analysis.get("items") or []:
@@ -94,6 +102,28 @@ def plan_skus(analysis: dict[str, Any]) -> list[dict[str, Any]]:
     generic_codes: dict[int, str] = {}
     changes: list[dict[str, Any]] = []
     for item in analysis.get("items") or []:
+        bowl_code = garnschale_size_code(item)
+        if bowl_code:
+            for product in item["inventory"].get("products") or []:
+                old = str(product.get("sku") or "").strip()
+                if old == bowl_code:
+                    continue
+                candidate = bowl_code
+                suffix = 1
+                while candidate in used:
+                    suffix += 1
+                    candidate = f"{bowl_code}-{suffix}"
+                used.add(candidate)
+                changes.append(
+                    {
+                        "listing_id": item["listing"]["listing_id"],
+                        "product_id": product["product_id"],
+                        "old_sku": old,
+                        "new_sku": candidate,
+                        "title": item["listing"].get("title"),
+                    }
+                )
+            continue
         if not is_bobbel(item):
             continue
         name = bobbel_name_code(item)

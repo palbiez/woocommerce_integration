@@ -432,7 +432,7 @@ Bestehende Etsy Produkte nach Freigabe kontrolliert in WooCommerce anlegen.
 - [x] Import ist reproduzierbar dokumentiert und gegen Duplikate abgesichert
 
 ## Ergebnis
-Kontrollierter Dry-Run am 17.09.2026 erstellt. 35 Produkte sind in der Preview enthalten; der verbleibende Blocker betrifft nur die drei Nicht-Bobbel-Garnschalen. Offen: Entscheidung, ob diese drei Artikel eine eigene SKU-Syntax erhalten oder in WooCommerce ueber Etsy Listing-ID gemappt werden.
+Kontrollierter Dry-Run am 17.09.2026 erstellt. Bobbel-SKUs sind bereinigt. Die drei Garnschalen erhalten die eigene Syntax `GS-[Größe in cm]`; danach kann der kontrollierte WooCommerce-Import erneut ausgefuehrt werden.
 "@
     },
     @{
