@@ -42,7 +42,7 @@ Username = etsy_integration
 Password = ...
 Path = /mnt/wci/woocommerce_integration/
 Port = 6001
-Domain = integration.mrsdaui.de
+Domain = integration.mrs-daui.de
 ExternalPort = 8443
 BindHost = 127.0.0.1
 SiteName = wci
@@ -58,7 +58,7 @@ Das Script [`scripts/setup-reverse-proxy-tls.sh`](../scripts/setup-reverse-proxy
 
 | Key | Bedeutung |
 | --- | --- |
-| `Domain` | Externer Hostname, z. B. `integration.mrsdaui.de` |
+| `Domain` | Externer Hostname, z. B. `integration.mrs-daui.de` |
 | `Port` | Lokaler Upstream-Port der App |
 | `ExternalPort` | Oeffentlicher HTTPS-Port von Nginx, aktuell `8443` |
 | `BindHost` | Lokale Upstream-Adresse, standardmaessig `127.0.0.1` |
@@ -69,7 +69,7 @@ Das Script [`scripts/setup-reverse-proxy-tls.sh`](../scripts/setup-reverse-proxy
 Mit den aktuellen Werten ergibt sich:
 
 ```text
-https://integration.mrsdaui.de:8443 -> http://127.0.0.1:6001
+https://integration.mrs-daui.de:8443 -> http://127.0.0.1:6001
 ```
 
 Das Script akzeptiert keine Setup-Argumente mehr. Der normale Aufruf auf dem Server ist:

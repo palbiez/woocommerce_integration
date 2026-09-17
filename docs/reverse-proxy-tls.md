@@ -50,7 +50,7 @@ Fuer den Reverse Proxy ist die Section `[AppData_server]` relevant:
 ```ini
 [AppData_server]
 Port = 6001
-Domain = integration.mrsdaui.de
+Domain = integration.mrs-daui.de
 ExternalPort = 8443
 BindHost = 127.0.0.1
 SiteName = wci
@@ -63,7 +63,7 @@ CertbotStaging = false
 Mit den aktuellen Werten ergibt sich:
 
 ```text
-https://integration.mrsdaui.de:8443 -> http://127.0.0.1:6001
+https://integration.mrs-daui.de:8443 -> http://127.0.0.1:6001
 ```
 
 ## Setup-Script

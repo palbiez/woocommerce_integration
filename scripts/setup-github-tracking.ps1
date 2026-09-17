@@ -246,10 +246,10 @@ Diese Route ist der OAuth-GET-Ruecksprung fuer `code` und `state`. Sie ist nicht
 Blockiert den echten Abschluss von M1-020 und damit M1-030/M1-080/M1-090.
 
 ## Testergebnis 17.09.2026
-- URL laut Konfiguration: `https://integration.mrsdaui.de:8443/oauth/etsy/callback`
+- URL laut Konfiguration: `https://integration.mrs-daui.de:8443/oauth/etsy/callback`
 - Eintrag im Etsy Developer Portal wurde vom Betreiber bestaetigt.
-- Externer DNS/HTTP-Test aus der Integrationsumgebung: fehlgeschlagen, Host `integration.mrsdaui.de` nicht aufloesbar.
-- Offen: DNS-A-Record/Proxy-Erreichbarkeit herstellen und danach TLS sowie Callback erneut testen.
+- Externer DNS-Test: `integration.mrs-daui.de` loest auf `78.47.204.164` auf.
+- HTTP-Test: Port `8443` ist aktuell nicht erreichbar; Nginx-Konfiguration/Firewall/Service muss auf dem Server aktiviert werden.
 "@
     },
     @{
