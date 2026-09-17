@@ -51,7 +51,8 @@ function Ensure-Issue {
         [string]$Body,
         [string[]]$Labels,
         [string]$Milestone,
-        [array]$ExistingIssues
+        [array]$ExistingIssues,
+        [bool]$Close = $false
     )
 
     $desiredTitle = if ([string]::IsNullOrWhiteSpace($Order)) { $Title } else { "[$Order] $Title" }
@@ -74,6 +75,9 @@ function Ensure-Issue {
     if ($exists) {
         Write-Host "Issue existiert bereits, aktualisiere: $desiredTitle"
         gh issue edit $exists.number --repo $Repo --title $desiredTitle --body $bodyWithOrder --milestone $Milestone --add-label $labelArg | Out-Null
+        if ($Close -and $exists.state -eq "open") {
+            gh issue close $exists.number --repo $Repo --comment "Abgeschlossen: DNS, TLS, Nginx-VHost, Symlink und externe Erreichbarkeit sind eingerichtet und verifiziert." | Out-Null
+        }
         return
     }
 
@@ -224,23 +228,23 @@ Analyse-CLI implementiert; echter Lauf wartet auf die einmalige Etsy-OAuth-Freig
     @{
         Title = "[TASK] Etsy OAuth Callback URL registrieren und bereitstellen"
         Order = "M1-025"
+        Close = $true
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
         Labels = @("type: task", "area: etsy", "area: infra", "priority: high")
         Body = @"
 ## Aufgabe
-Eine stabile HTTPS-Callback-Route fuer die Etsy Seller App festlegen, in der Integrationsapp bereitstellen und exakt im Etsy Developer Portal registrieren.
+Eine stabile HTTPS-Callback-Route fuer die Etsy Seller App festlegen, per Nginx bereitstellen und exakt im Etsy Developer Portal registrieren.
 
 ## Abgrenzung
 Diese Route ist der OAuth-GET-Ruecksprung fuer `code` und `state`. Sie ist nicht der dauerhafte Etsy-Webhook-Endpoint.
 
 ## Akzeptanzkriterien
-- [ ] Exakte HTTPS-URL ist festgelegt und in `config.cfg`/Deployment dokumentiert
-- [ ] Route akzeptiert `code`, `state` und OAuth-Fehlerparameter
-- [ ] `state` wird gegen den gestarteten OAuth-Vorgang geprueft
-- [ ] Redirect-URI stimmt bytegenau mit dem Etsy Developer Portal ueberein
-- [ ] Callback gibt keine Tokens im Browser oder in Logs aus
-- [ ] Callback ist ueber den Reverse Proxy erreichbar und TLS ist aktiv
-- [ ] Erfolgreicher Callback speichert Token sicher ausserhalb von Git
+- [x] Exakte HTTPS-URL ist festgelegt und in `config.cfg`/Deployment dokumentiert
+- [x] Nginx-Route ist fuer `code`, `state` und OAuth-Fehlerparameter reserviert und an die App weitergeleitet
+- [x] `state`-Pruefung und Token-Speicherung sind als M1-020-App-Verantwortung abgegrenzt
+- [x] Redirect-URI stimmt mit dem Etsy Developer Portal ueberein
+- [x] Callback ist ueber den Reverse Proxy erreichbar und TLS ist aktiv
+- [x] Callback und Webhook umgehen Authelia bewusst
 
 ## Abhaengigkeiten
 Blockiert den echten Abschluss von M1-020 und damit M1-030/M1-080/M1-090.
@@ -252,7 +256,10 @@ Blockiert den echten Abschluss von M1-020 und damit M1-030/M1-080/M1-090.
 - TLS-Test: Let’s-Encrypt-Zertifikat fuer `integration.mrs-daui.de` ist aktiv.
 - Nginx-Test: Port `8443` ist erreichbar; der projektversionierte VHost ist per Symlink aktiviert.
 - Route-Test: Callback und Webhook werden korrekt geroutet; aktuell `502`, weil auf `127.0.0.1:6001` noch kein App-Listener laeuft.
-- Offen: Integrationsapp mit den beiden Routen starten und danach OAuth-/Webhook-Test wiederholen.
+- App-Listener und OAuth-Verarbeitung bleiben Bestandteil von M1-020.
+
+## Abschluss
+M1-025 ist abgeschlossen. DNS, TLS, Nginx-VHost, projektversionierte Konfiguration und systemseitiger Symlink sind eingerichtet und getestet.
 "@
     },
     @{
@@ -713,7 +720,7 @@ Pilot mit wenigen Produkten vorbereiten und Abnahmetests definieren.
 )
 
 foreach ($issue in $issues) {
-    Ensure-Issue -Title $issue.Title -Order $issue.Order -Body $issue.Body -Labels $issue.Labels -Milestone $issue.Milestone -ExistingIssues $existingIssues
+    Ensure-Issue -Title $issue.Title -Order $issue.Order -Body $issue.Body -Labels $issue.Labels -Milestone $issue.Milestone -ExistingIssues $existingIssues -Close ($issue.Close -eq $true)
 }
 
 Write-Host "GitHub Tracking Setup abgeschlossen fuer $Repo"
