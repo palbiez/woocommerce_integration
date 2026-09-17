@@ -152,12 +152,32 @@ Der Dienst `scripts/py/etsy_service.py` laeuft auf dem Hetzner-Server als system
 Routen:
 
 - `GET /healthz` – lokaler Healthcheck
-- `GET /oauth/etsy/start` – startet PKCE-OAuth und leitet zu Etsy weiter
+- `GET /oauth/etsy/start` – startet PKCE-OAuth mit Lese- und Schreibrecht fuer Listings und leitet zu Etsy weiter
 - `GET /oauth/etsy/callback` – validiert `state`, speichert Token und erstellt den Etsy-Snapshot
 - `POST /webhooks/etsy` – speichert eingehende Test-/Webhook-Payloads unter `data/etsy_webhooks/`
 - `GET /api/etsy/snapshot` – liest den letzten Snapshot lokal aus
 
 Nach erfolgreicher OAuth-Freigabe wird `data/m1_etsy_snapshot/latest.json` mit Shop-ID, aktiven Listings, Inventory/Varianten und Bildern geschrieben. Die Snapshot-Datei und OAuth-Secrets bleiben durch `.gitignore` ausserhalb von Git.
+
+## SKU-Anreicherung der Etsy-Daten
+
+Einfache WooCommerce-Produkte koennen technisch ohne SKU existieren. Fuer eine stabile Etsy/WooCommerce-Zuordnung werden jedoch alle verkaufbaren Bobbel-Einheiten mit einer eindeutigen SKU versehen. Varianten behalten jeweils eine eigene SKU. Nicht-Bobbel-Produkte wie Garnschalen erhalten spaeter eine eigene Produktgruppen-Syntax.
+
+Verbindliche Syntax:
+
+```text
+<Name- oder Nummerncode>-<Lauflänge in Metern>-<Verlaufsart>[-<Duplikatnummer>]
+```
+
+Beispiele und Codes:
+
+- `GOLDMARIE` -> `GM`, `BLUE LEMONADE` -> `BL`, `EINZELSTÜCK` -> `ES`
+- weitere Namen erhalten zwei stabile Grossbuchstaben, z. B. `WEINLAUB` -> `WL`
+- namenlose Bobbel erhalten eine laufende zweistellige Nummer `01` bis `99`
+- `NV` normaler Verlauf, `SV` sanfter Verlauf, `VV` verrückter Verlauf, `GV` gemischter Verlauf, `TV` Tuchverlauf
+- bei einer echten Kollision wird `-2`, `-3` usw. angehaengt
+
+Der Plan wird mit `python3 scripts/py/etsy_update_skus.py` nur angezeigt. Erst `--apply` schreibt die eindeutig ableitbaren Bobbel-SKUs nach Etsy. Vor `--apply` muessen die Vorschlaege fachlich geprueft werden.
 
 ## Aktueller Ausfuehrungsstatus
 

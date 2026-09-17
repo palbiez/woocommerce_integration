@@ -31,7 +31,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PENDING_FILE = PROJECT_ROOT / ".secrets" / "etsy_oauth_pending.json"
 SNAPSHOT_FILE = DATA_DIR / "m1_etsy_snapshot" / "latest.json"
 WEBHOOK_DIR = DATA_DIR / "etsy_webhooks"
-DEFAULT_SCOPES = ["listings_r", "shops_r", "profile_r", "transactions_r"]
+DEFAULT_SCOPES = ["listings_r", "listings_w", "shops_r", "profile_r", "transactions_r"]
 
 
 def code_challenge(verifier: str) -> str:
