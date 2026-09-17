@@ -222,6 +222,31 @@ Analyse-CLI implementiert; echter Lauf wartet auf die einmalige Etsy-OAuth-Freig
 "@
     },
     @{
+        Title = "[TASK] Etsy OAuth Callback URL registrieren und bereitstellen"
+        Order = "M1-025"
+        Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
+        Labels = @("type: task", "area: etsy", "area: infra", "priority: high")
+        Body = @"
+## Aufgabe
+Eine stabile HTTPS-Callback-Route fuer die Etsy Seller App festlegen, in der Integrationsapp bereitstellen und exakt im Etsy Developer Portal registrieren.
+
+## Abgrenzung
+Diese Route ist der OAuth-GET-Ruecksprung fuer `code` und `state`. Sie ist nicht der dauerhafte Etsy-Webhook-Endpoint.
+
+## Akzeptanzkriterien
+- [ ] Exakte HTTPS-URL ist festgelegt und in `config.cfg`/Deployment dokumentiert
+- [ ] Route akzeptiert `code`, `state` und OAuth-Fehlerparameter
+- [ ] `state` wird gegen den gestarteten OAuth-Vorgang geprueft
+- [ ] Redirect-URI stimmt bytegenau mit dem Etsy Developer Portal ueberein
+- [ ] Callback gibt keine Tokens im Browser oder in Logs aus
+- [ ] Callback ist ueber den Reverse Proxy erreichbar und TLS ist aktiv
+- [ ] Erfolgreicher Callback speichert Token sicher ausserhalb von Git
+
+## Abhaengigkeiten
+Blockiert den echten Abschluss von M1-020 und damit M1-030/M1-080/M1-090.
+"@
+    },
+    @{
         Title = "[DECISION] WooCommerce Erweiterung fuer Personalisierungsfelder waehlen"
         Order = "M1-050"
         Milestone = "M1 Etsy Bestandsaufnahme und WooCommerce Migration"
@@ -324,6 +349,32 @@ WooCommerce Webhooks fuer Produkt- und Bestellaenderungen vorbereiten.
 - [ ] Bestellung aktualisiert Webhook ist definiert
 - [ ] Signatur-/Authentifizierungskonzept ist dokumentiert
 - [ ] Testpayloads werden geloggt
+"@
+    },
+    @{
+        Title = "[TASK] Etsy-Webhooks im Developer Portal einrichten"
+        Order = "M2-035"
+        Milestone = "M2 Core Sync WooCommerce Etsy"
+        Labels = @("type: task", "area: etsy", "area: infra", "area: orders", "priority: high")
+        Body = @"
+## Aufgabe
+Den dauerhaft erreichbaren Etsy-Webhook-Endpoint bereitstellen und im Etsy Webhook Portal fuer die Seller App konfigurieren.
+
+## Abgrenzung
+Der OAuth-Callback aus M1-025 ist eine separate Route. Dieser Endpoint nimmt signierte HTTP-POST-Nachrichten entgegen.
+
+## Akzeptanzkriterien
+- [ ] Oeffentliche HTTPS-URL fuer Etsy-Webhooks ist festgelegt und dokumentiert
+- [ ] Endpoint akzeptiert die aktuell benoetigten Events: `order.paid`, `order.canceled`, `order.shipped`, `order.delivered`
+- [ ] Etsy-Webhooks sind im Developer/Webhook Portal angelegt und der Status ist dokumentiert
+- [ ] Signing Secret liegt ausserhalb von Git und wird aus produktiver Konfiguration geladen
+- [ ] Signatur wird anhand des Raw-Request-Bodys und der Header `webhook-id`, `webhook-timestamp`, `webhook-signature` geprueft
+- [ ] Ungueltige oder zu alte Requests werden abgewiesen
+- [ ] Wiederholte Zustellungen werden ueber `webhook-id` idempotent behandelt
+- [ ] Testevents aus dem Etsy Webhook Portal sind erfolgreich verarbeitet
+
+## Abhaengigkeiten
+M2-035 stellt die technische Zustellung sicher; M3-030 verarbeitet die Etsy-Bestellung fachlich in WooCommerce.
 "@
     },
     @{

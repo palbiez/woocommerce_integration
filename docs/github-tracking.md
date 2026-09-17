@@ -90,13 +90,14 @@ Ziel: Repository, Secrets und Betriebsgrundlage sind geklaert, bevor produktive 
 
 1. `[M1-010] [TASK] WooCommerce REST API Zugriff testen`
 2. `[M1-020] [TASK] Etsy OAuth und Token-Speicherung als POC bauen`
-3. `[M1-030] [TASK] Bestehende Etsy Listings per API oder Export analysieren`
-4. `[M1-040] [REQ] SKU- und Produktdatenmodell definieren`
-5. `[M1-050] [DECISION] WooCommerce Erweiterung fuer Personalisierungsfelder waehlen`
-6. `[M1-060] [DECISION] Bundle-Modell in WooCommerce festlegen`
-7. `[M1-070] [DECISION] Made-to-Order Bestand und Lieferzeit definieren`
-8. `[M1-080] [TASK] Import-Preview Etsy nach WooCommerce erstellen`
-9. `[M1-090] [TASK] Initialen WooCommerce Produktimport durchfuehren`
+3. `[M1-025] [TASK] Etsy OAuth Callback URL registrieren und bereitstellen`
+4. `[M1-030] [TASK] Bestehende Etsy Listings per API oder Export analysieren`
+5. `[M1-040] [REQ] SKU- und Produktdatenmodell definieren`
+6. `[M1-050] [DECISION] WooCommerce Erweiterung fuer Personalisierungsfelder waehlen`
+7. `[M1-060] [DECISION] Bundle-Modell in WooCommerce festlegen`
+8. `[M1-070] [DECISION] Made-to-Order Bestand und Lieferzeit definieren`
+9. `[M1-080] [TASK] Import-Preview Etsy nach WooCommerce erstellen`
+10. `[M1-090] [TASK] Initialen WooCommerce Produktimport durchfuehren`
 
 Ziel: Erst lesen und verstehen, dann modellieren, dann previewen, erst danach in WooCommerce schreiben.
 
@@ -106,8 +107,9 @@ Ziel: Erst lesen und verstehen, dann modellieren, dann previewen, erst danach in
 2. `[M2-020] [TASK] Etsy Kategorie Attribut und Template Mapping erstellen`
 3. `[M2-030] [TASK] WooCommerce Webhooks fuer Produkt und Bestellung einrichten`
 4. `[M2-040] [DECISION] Preislogik Etsy und WooCommerce festlegen`
-5. `[M2-050] [TASK] Automatischen Produktabgleich WooCommerce zu Etsy implementieren`
-6. `[M2-060] [TASK] Review-Status fuer neue Etsy Listings vorsehen`
+5. `[M2-035] [TASK] Etsy-Webhooks im Developer Portal einrichten`
+6. `[M2-050] [TASK] Automatischen Produktabgleich WooCommerce zu Etsy implementieren`
+7. `[M2-060] [TASK] Review-Status fuer neue Etsy Listings vorsehen`
 
 Ziel: Erst stabile IDs und Mapping, danach automatische Updates.
 
