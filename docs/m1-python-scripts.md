@@ -145,6 +145,20 @@ python scripts/py/import_preview_to_woocommerce.py --apply --allow-missing-sku
 - Variable Produkte erhalten aus den Etsy-Varianten aggregierte WooCommerce-Attribute; Varianten werden ueber SKU wiedererkannt.
 - Ein leerer WooCommerce-Bestand gilt als erfolgreicher API-Read, nicht als fehlgeschlagener Check.
 
+## Kleiner Server-Service auf Port 6001
+
+Der Dienst `scripts/py/etsy_service.py` laeuft auf dem Hetzner-Server als systemd-Service `woocommerce-etsy.service` und bindet nur an `127.0.0.1:6001`.
+
+Routen:
+
+- `GET /healthz` – lokaler Healthcheck
+- `GET /oauth/etsy/start` – startet PKCE-OAuth und leitet zu Etsy weiter
+- `GET /oauth/etsy/callback` – validiert `state`, speichert Token und erstellt den Etsy-Snapshot
+- `POST /webhooks/etsy` – speichert eingehende Test-/Webhook-Payloads unter `data/etsy_webhooks/`
+- `GET /api/etsy/snapshot` – liest den letzten Snapshot lokal aus
+
+Nach erfolgreicher OAuth-Freigabe wird `data/m1_etsy_snapshot/latest.json` mit Shop-ID, aktiven Listings, Inventory/Varianten und Bildern geschrieben. Die Snapshot-Datei und OAuth-Secrets bleiben durch `.gitignore` ausserhalb von Git.
+
 ## Aktueller Ausfuehrungsstatus
 
 - WooCommerce REST API: erreichbar; am 16.09.2026 wurden Produkte, Varianten-/Bestandsfelder und Bestellungen erfolgreich gelesen. Der Shop war dabei leer.

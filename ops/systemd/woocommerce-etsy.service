@@ -1,0 +1,20 @@
+[Unit]
+Description=WooCommerce Etsy Integration Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=etsy_integration
+Group=etsy_integration
+WorkingDirectory=/mnt/wci/woocommerce_integration
+ExecStart=/usr/bin/python3 /mnt/wci/woocommerce_integration/scripts/py/etsy_service.py --config /mnt/wci/woocommerce_integration/config.cfg --host 127.0.0.1 --port 6001
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ReadWritePaths=/mnt/wci/woocommerce_integration/.secrets /mnt/wci/woocommerce_integration/data
+
+[Install]
+WantedBy=multi-user.target
