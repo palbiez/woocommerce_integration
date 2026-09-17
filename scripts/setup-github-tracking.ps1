@@ -244,6 +244,12 @@ Diese Route ist der OAuth-GET-Ruecksprung fuer `code` und `state`. Sie ist nicht
 
 ## Abhaengigkeiten
 Blockiert den echten Abschluss von M1-020 und damit M1-030/M1-080/M1-090.
+
+## Testergebnis 17.09.2026
+- URL laut Konfiguration: `https://integration.mrsdaui.de:8443/oauth/etsy/callback`
+- Eintrag im Etsy Developer Portal wurde vom Betreiber bestaetigt.
+- Externer DNS/HTTP-Test aus der Integrationsumgebung: fehlgeschlagen, Host `integration.mrsdaui.de` nicht aufloesbar.
+- Offen: DNS-A-Record/Proxy-Erreichbarkeit herstellen und danach TLS sowie Callback erneut testen.
 "@
     },
     @{
@@ -310,7 +316,7 @@ OAuth 2.0 Flow fuer Etsy implementieren und Refresh Tokens sicher speichern.
 - [x] Fehlerfaelle werden ohne Secretwerte ausgegeben
 
 ## Ergebnis
-Technischer POC implementiert. Die aktuellen Seller-App-Credentials wurden am 16.09.2026 geprueft; der API-Key funktioniert. Fuer Shop-/Listingdaten bitte einmalig `python3 scripts/py/etsy_oauth.py` interaktiv mit Browserfreigabe ausfuehren.
+Technischer POC implementiert. Die aktuellen Seller-App-Credentials wurden geprueft; der API-Key funktioniert. OAuth-Link mit der registrierten Redirect-URI wurde am 17.09.2026 erzeugt. Die Token-Erzeugung bleibt offen, bis DNS/HTTPS fuer M1-025 erreichbar ist.
 "@
     },
     @{
