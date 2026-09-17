@@ -223,7 +223,7 @@ Alle bestehenden Etsy Listings erfassen und technisch auswerten.
 - [x] Sonderfaelle werden dokumentiert
 
 ## Ergebnis
-Echter Lauf am 17.09.2026: 35 aktive Listings, 6 SKUs, 32 fehlende SKU-Zuordnungen, 1 doppelte SKU (`GM-450-VV`), 4 Variantenfaelle, 3 personalisierte Produkte und 35 Made-to-Order-Kandidaten.
+Echter Lauf am 17.09.2026: 35 aktive Listings, 37 eindeutige SKUs, keine Duplikate, 3 fehlende SKU-Zuordnungen fuer personalisierte Garnschalen, 4 Variantenfaelle und 3 personalisierte Produkte.
 "@
     },
     @{
@@ -412,7 +412,7 @@ Vor dem Schreiben nach WooCommerce eine Vorschau erzeugen, welche Produkte, Vari
 - [x] Keine WooCommerce-Daten werden ohne Freigabe geschrieben
 
 ## Ergebnis
-Preview mit echten Etsy-Daten am 17.09.2026 erstellt: 35 Produkte, 32 fehlende SKUs markiert. Es wurden keine WooCommerce-Daten geschrieben.
+Preview mit echten Etsy-Daten am 17.09.2026 erstellt: 35 Produkte, 3 fehlende SKUs bei Garnschalen markiert. Es wurden keine WooCommerce-Daten geschrieben.
 "@
     },
     @{
@@ -432,7 +432,7 @@ Bestehende Etsy Produkte nach Freigabe kontrolliert in WooCommerce anlegen.
 - [x] Import ist reproduzierbar dokumentiert und gegen Duplikate abgesichert
 
 ## Ergebnis
-Kontrollierter Dry-Run am 17.09.2026 erstellt. 35 Produkte sind in der Preview enthalten; ohne `--allow-missing-sku` wird korrekt abgebrochen. Mit `--allow-missing-sku` wurde nur ein Dry-Run ausgefuehrt. Offen: SKU-Bereinigung und fachliche Freigabe vor `--apply`.
+Kontrollierter Dry-Run am 17.09.2026 erstellt. 35 Produkte sind in der Preview enthalten; der verbleibende Blocker betrifft nur die drei Nicht-Bobbel-Garnschalen. Offen: Entscheidung, ob diese drei Artikel eine eigene SKU-Syntax erhalten oder in WooCommerce ueber Etsy Listing-ID gemappt werden.
 "@
     },
     @{

@@ -179,6 +179,8 @@ Beispiele und Codes:
 
 Der Plan wird mit `python3 scripts/py/etsy_update_skus.py` nur angezeigt. Erst `--apply` schreibt die eindeutig ableitbaren Bobbel-SKUs nach Etsy. Vor `--apply` muessen die Vorschlaege fachlich geprueft werden.
 
+Am 17.09.2026 wurden 31 fehlende bzw. kollidierende Bobbel-SKUs nach Etsy geschrieben. Die anschliessende Live-Analyse ergab 37 eindeutige SKUs und keine Duplikate. Drei personalisierte Garnschalen bleiben ohne SKU, da sie nicht zur Bobbel-Syntax gehoeren.
+
 ## Aktueller Ausfuehrungsstatus
 
 - WooCommerce REST API: erreichbar; am 16.09.2026 wurden Produkte, Varianten-/Bestandsfelder und Bestellungen erfolgreich gelesen. Der Shop war dabei leer.

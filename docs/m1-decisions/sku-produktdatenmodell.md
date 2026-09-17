@@ -1,5 +1,29 @@
 # M1-040 SKU- und Produktdatenmodell
 
+## Verbindliche SKU-Syntax fuer Bobbel
+
+Fuer Bobbel wird folgende Syntax verwendet:
+
+```text
+<Namecode>-<Lauflänge in Metern>-<Verlaufsart>[-<Duplikatnummer>]
+```
+
+Namecodes bestehen aus zwei Grossbuchstaben, zum Beispiel `GM` fuer GoldMarie, `BL` fuer Blue Lemonade und `ES` fuer EINZELSTÜCK. Weitere bekannte Namen werden ebenfalls stabil auf zwei Buchstaben abgebildet, z. B. `WL` fuer Weinlaub, `PT` fuer Phoenixtraum und `GV` fuer Grey Velvet. Wenn kein Name vorhanden ist, wird eine laufende Nummer von `01` bis `99` verwendet.
+
+Verlaufsarten:
+
+| Code | Bedeutung |
+| --- | --- |
+| `NV` | normaler Verlauf |
+| `SV` | sanfter Verlauf |
+| `VV` | verrückter Verlauf |
+| `GV` | gemischter Verlauf |
+| `TV` | Tuchverlauf/Tuchwicklung |
+
+Die Lauflänge wird in Metern angegeben; bei Angaben wie `2x225m` wird die Gesamtlaenge `450` verwendet. Bei einer echten Kollision wird eine Duplikatnummer angehaengt, z. B. `ES-1500-SV-2`.
+
+Die Syntax gilt fuer Bobbel und Bobbel-Varianten. Andere Produktgruppen, aktuell insbesondere Garnschalen, erhalten keine automatisch erfundene Bobbel-SKU; dafuer wird bei Bedarf eine eigene Produktgruppen-Syntax beschlossen.
+
 Status: vorbereitet zur Entscheidung
 
 ## Ziel
