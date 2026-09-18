@@ -58,6 +58,7 @@ Bei einer Etsy **Seller App** sind `KeyString` und `Secret` die App-Zugangsdaten
 aus `X-WC-Webhook-Signature` ueber den unveraenderten Request-Body und behandelt
 `X-WC-Webhook-ID` idempotent. Alternativ kann der Secret-Wert als Umgebungsvariable
 `WOOCOMMERCE_WEBHOOK_SECRET` gesetzt werden.
+Der Service verwendet ersatzweise auch `.secrets/woocommerce_webhook_secret`.
 
 Für Etsy-Webhooks wird das Signing Secret aus dem Etsy Webhook Portal als `EtsyAPI.WebhookSecret`
 hinterlegt. Der Service prüft damit den signierten Roh-Body, akzeptiert nur Zeitstempel innerhalb von

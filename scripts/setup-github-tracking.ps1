@@ -355,6 +355,7 @@ WooCommerce REST API erfolgreich verifiziert; Report liegt lokal unter `data/m1_
     @{
         Title = "[TASK] WooCommerce Webhooks fuer Produkt und Bestellung einrichten"
         Order = "M2-030"
+        Close = $true
         Milestone = "M2 Core Sync WooCommerce Etsy"
         Labels = @("type: task", "area: woocommerce", "area: infra", "priority: high")
         Body = @"
@@ -369,7 +370,10 @@ WooCommerce Webhooks fuer Produkt- und Bestellaenderungen vorbereiten.
 - [x] Testpayloads werden geloggt
 
 ## Technischer Stand
-Der Endpoint `https://integration.mrs-daui.de:8443/webhooks/woocommerce` ist in der Anwendung und im Nginx-VHost vorbereitet. Die Anwendung validiert `X-WC-Webhook-Signature` per HMAC-SHA256, verwendet `X-WC-Webhook-ID` zur Idempotenz und speichert Payloads ausserhalb von Git. Offen bleibt die Erstellung der drei Webhooks im WooCommerce-Backend nach Festlegung/Einrichtung des produktiven Secrets.
+Der Endpoint `https://integration.mrs-daui.de/webhooks/woocommerce` ist in der Anwendung und im Nginx-VHost vorbereitet. Die Anwendung validiert `X-WC-Webhook-Signature` per HMAC-SHA256, verwendet `X-WC-Webhook-ID` zur Idempotenz und speichert Payloads ausserhalb von Git. Das produktive Secret liegt serverseitig ausserhalb von Git.
+
+## Ergebnis
+Die drei aktiven WooCommerce-Webhooks `product.updated`, `order.created` und `order.updated` wurden am 18.09.2026 mit dem Endpoint `https://integration.mrs-daui.de/webhooks/woocommerce` angelegt. Ein signierter Test wurde angenommen; eine Wiederholung derselben Webhook-ID wurde idempotent erkannt.
 "@
     },
     @{

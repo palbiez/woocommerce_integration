@@ -32,6 +32,7 @@ from common import (
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PENDING_FILE = PROJECT_ROOT / ".secrets" / "etsy_oauth_pending.json"
+WOOCOMMERCE_WEBHOOK_SECRET_FILE = PROJECT_ROOT / ".secrets" / "woocommerce_webhook_secret"
 SNAPSHOT_FILE = DATA_DIR / "m1_etsy_snapshot" / "latest.json"
 WEBHOOK_DIR = DATA_DIR / "etsy_webhooks"
 WOOCOMMERCE_WEBHOOK_DIR = DATA_DIR / "woocommerce_webhooks"
@@ -326,6 +327,8 @@ def handle_woocommerce_webhook(self: EtsyService) -> None:
     secret = os.environ.get("WOOCOMMERCE_WEBHOOK_SECRET", "").strip()
     if not secret:
         secret = self.server.config.get("Woocommerce", "WebhookSecret", fallback="").strip()
+    if not secret and WOOCOMMERCE_WEBHOOK_SECRET_FILE.exists():
+        secret = WOOCOMMERCE_WEBHOOK_SECRET_FILE.read_text(encoding="utf-8").strip()
     if not secret:
         self._send_json(503, {"error": "webhook_secret_not_configured"})
         return
