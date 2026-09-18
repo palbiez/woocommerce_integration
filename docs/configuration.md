@@ -25,6 +25,7 @@ AppPassword = ...
 Url = https://shop.mrsdaui.de
 ApiKey = ...
 ApiSecret = ...
+WebhookSecret = ...
 
 [EtsyAPI]
 AppName = integration-woocommerce
@@ -51,6 +52,11 @@ CertbotStaging = false
 ```
 
 Bei einer Etsy **Seller App** sind `KeyString` und `Secret` die App-Zugangsdaten. Jede Etsy-API-Anfrage verwendet daraus den Header `x-api-key: KeyString:Secret`. Seller-/Shopdaten und Schreibzugriffe benoetigen zusaetzlich einen OAuth-2.0-Token mit den erforderlichen Scopes. `ShopId` kann leer bleiben, wenn sie nach OAuth ueber `application/users/me` ermittelt wird.
+
+`Woocommerce.WebhookSecret` bleibt ausserhalb von Git. Der Service prueft damit den Base64-HMAC-SHA256-Wert
+aus `X-WC-Webhook-Signature` ueber den unveraenderten Request-Body und behandelt
+`X-WC-Webhook-ID` idempotent. Alternativ kann der Secret-Wert als Umgebungsvariable
+`WOOCOMMERCE_WEBHOOK_SECRET` gesetzt werden.
 
 ## Reverse Proxy
 

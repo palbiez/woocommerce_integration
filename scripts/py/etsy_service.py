@@ -3,8 +3,10 @@ from __future__ import annotations
 import argparse
 import base64
 import hashlib
+import hmac
 import html
 import json
+import os
 import secrets
 import time
 import urllib.parse
@@ -31,6 +33,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PENDING_FILE = PROJECT_ROOT / ".secrets" / "etsy_oauth_pending.json"
 SNAPSHOT_FILE = DATA_DIR / "m1_etsy_snapshot" / "latest.json"
 WEBHOOK_DIR = DATA_DIR / "etsy_webhooks"
+WOOCOMMERCE_WEBHOOK_DIR = DATA_DIR / "woocommerce_webhooks"
 DEFAULT_SCOPES = ["listings_r", "listings_w", "shops_r", "profile_r", "transactions_r"]
 
 
@@ -190,6 +193,9 @@ class EtsyService(BaseHTTPRequestHandler):
         self._send_json(404, {"error": "not_found"})
 
     def do_POST(self) -> None:  # noqa: N802
+        if self.path == "/webhooks/woocommerce":
+            handle_woocommerce_webhook(self)
+            return
         if self.path != "/webhooks/etsy":
             self._send_json(404, {"error": "not_found"})
             return
@@ -281,6 +287,52 @@ def handle_oauth_callback(self: EtsyService, parsed: Any) -> None:
         self.wfile.write(body)
     except Exception as exc:  # callback must return a safe diagnostic, never credentials
         self._send_json(500, {"error": str(exc)})
+
+
+def handle_woocommerce_webhook(self: EtsyService) -> None:
+    length = int(self.headers.get("Content-Length", "0"))
+    if length > 1024 * 1024:
+        self._send_json(413, {"error": "payload_too_large"})
+        return
+    raw = self.rfile.read(length)
+    secret = os.environ.get("WOOCOMMERCE_WEBHOOK_SECRET", "").strip()
+    if not secret:
+        secret = self.server.config.get("Woocommerce", "WebhookSecret", fallback="").strip()
+    if not secret:
+        self._send_json(503, {"error": "webhook_secret_not_configured"})
+        return
+    supplied = self.headers.get("X-WC-Webhook-Signature", "").strip()
+    expected = base64.b64encode(hmac.new(secret.encode("utf-8"), raw, hashlib.sha256).digest()).decode("ascii")
+    if not supplied or not hmac.compare_digest(supplied, expected):
+        self._send_json(401, {"error": "invalid_webhook_signature"})
+        return
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        self._send_json(400, {"error": "invalid_json"})
+        return
+    event_id = self.headers.get("X-WC-Webhook-ID", "").strip()
+    if not event_id:
+        self._send_json(400, {"error": "missing_webhook_id"})
+        return
+    safe_id = "".join(ch for ch in event_id if ch.isalnum() or ch in "-_")[:100]
+    WOOCOMMERCE_WEBHOOK_DIR.mkdir(parents=True, exist_ok=True)
+    target = WOOCOMMERCE_WEBHOOK_DIR / f"{safe_id}.json"
+    if target.exists():
+        self._send_json(200, {"accepted": True, "duplicate": True, "webhook_id": event_id})
+        return
+    write_json(
+        target,
+        {
+            "received_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "webhook_id": event_id,
+            "topic": self.headers.get("X-WC-Webhook-Topic"),
+            "resource": self.headers.get("X-WC-Webhook-Resource"),
+            "event": self.headers.get("X-WC-Webhook-Event"),
+            "payload": payload,
+        },
+    )
+    self._send_json(202, {"accepted": True, "webhook_id": event_id})
 class ServiceServer(ThreadingHTTPServer):
     def __init__(self, address: tuple[str, int], config: Any) -> None:
         super().__init__(address, EtsyService)

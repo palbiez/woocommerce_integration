@@ -362,11 +362,14 @@ WooCommerce REST API erfolgreich verifiziert; Report liegt lokal unter `data/m1_
 WooCommerce Webhooks fuer Produkt- und Bestellaenderungen vorbereiten.
 
 ## Akzeptanzkriterien
-- [ ] Produkt geaendert Webhook ist definiert
-- [ ] Bestellung erstellt Webhook ist definiert
-- [ ] Bestellung aktualisiert Webhook ist definiert
-- [ ] Signatur-/Authentifizierungskonzept ist dokumentiert
-- [ ] Testpayloads werden geloggt
+- [x] Produkt geaendert Webhook ist definiert
+- [x] Bestellung erstellt Webhook ist definiert
+- [x] Bestellung aktualisiert Webhook ist definiert
+- [x] Signatur-/Authentifizierungskonzept ist dokumentiert
+- [x] Testpayloads werden geloggt
+
+## Technischer Stand
+Der Endpoint `https://integration.mrs-daui.de:8443/webhooks/woocommerce` ist in der Anwendung und im Nginx-VHost vorbereitet. Die Anwendung validiert `X-WC-Webhook-Signature` per HMAC-SHA256, verwendet `X-WC-Webhook-ID` zur Idempotenz und speichert Payloads ausserhalb von Git. Offen bleibt die Erstellung der drei Webhooks im WooCommerce-Backend nach Festlegung/Einrichtung des produktiven Secrets.
 "@
     },
     @{
