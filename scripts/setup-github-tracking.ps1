@@ -452,11 +452,14 @@ Am 17.09.2026 wurden 35 Etsy-Produkte erfolgreich nach WooCommerce importiert. D
 Mapping fuer Etsy Kategorien, Attribute, Versandprofile und Listing-Templates definieren.
 
 ## Akzeptanzkriterien
-- [ ] Kategorien der bestehenden Listings sind erfasst
+- [x] Kategorien der bestehenden Listings sind erfasst
 - [ ] Pflichtattribute je Kategorie sind dokumentiert
-- [ ] Versandprofile sind zugeordnet
-- [ ] Template-Regeln fuer Titel und Beschreibung sind definiert
-- [ ] Mapping ist versionierbar abgelegt
+- [x] Versandprofile sind zugeordnet
+- [x] Template-Regeln fuer Titel und Beschreibung sind definiert
+- [x] Mapping ist versionierbar abgelegt
+
+## Ergebnis
+Die 35 importierten Produkte sind den WooCommerce-Kategorien `Farbverlaufsgarn / Bobbel` und `Garnschalen` zugeordnet. Die Etsy-Versandprofile `Standard` und `Kleinmenge` wurden als WooCommerce-Versandklassen angelegt und ebenfalls vollständig zugeordnet. Die verbleibende offene Entscheidung betrifft nur die fachlichen Pflichtattribute je Kategorie.
 "@
     },
     @{

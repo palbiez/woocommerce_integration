@@ -40,6 +40,14 @@ def listing_id(product: dict[str, Any]) -> str | None:
     return None
 
 
+def ensure_category(wc: Any, name: str, slug: str) -> dict[str, Any]:
+    categories = wc_get(wc, "products/categories", {"per_page": 100, "page": 1})
+    for category in categories or []:
+        if category.get("slug") == slug or str(category.get("name", "")).casefold() == name.casefold():
+            return category
+    return wc_post(wc, "products/categories", {"name": name, "slug": slug})
+
+
 def run() -> None:
     parser = argparse.ArgumentParser(description="M2: Etsy-Versandprofile als WooCommerce-Versandklassen einrichten.")
     add_common_args(parser)
@@ -52,6 +60,14 @@ def run() -> None:
     profiles = etsy_get(etsy, f"application/shops/{shop_id}/shipping-profiles", token=token).get("results", [])
     profile_by_id = {str(p["shipping_profile_id"]): p for p in profiles}
     wc = load_woocommerce_config(config)
+    category_specs = {
+        "6243": ("Farbverlaufsgarn / Bobbel", "farbverlaufsgarn-bobbel"),
+        "6380": ("Garnschalen", "garnschalen"),
+    }
+    woo_categories = {
+        taxonomy_id: ensure_category(wc, name, slug)
+        for taxonomy_id, (name, slug) in category_specs.items()
+    }
     classes = wc_get(wc, "products/shipping_classes", {"per_page": 100, "page": 1})
     class_by_slug = {str(item.get("slug")): item for item in classes or []}
     woo_classes: dict[str, dict[str, Any]] = {}
@@ -84,15 +100,20 @@ def run() -> None:
         profile_key = str(listing.get("shipping_profile_id") or "")
         shipping_class = woo_classes.get(profile_key)
         profile = profile_by_id.get(profile_key)
-        if not product or not shipping_class or not profile:
+        taxonomy_key = str(listing.get("taxonomy_id") or "")
+        category = woo_categories.get(taxonomy_key)
+        if not product or not shipping_class or not profile or not category:
             unmatched.append(listing_key)
             continue
         payload = {
             "shipping_class": shipping_class.get("slug") or slugify(str(profile["title"])),
+            "categories": [{"id": category["id"]}],
             "meta_data": [
                 {"key": "_etsy_shipping_profile_id", "value": profile_key},
                 {"key": "_etsy_shipping_profile_title", "value": profile["title"]},
                 {"key": "_etsy_return_policy_id", "value": str(listing.get("return_policy_id") or "")},
+                {"key": "_etsy_taxonomy_id", "value": taxonomy_key},
+                {"key": "_etsy_taxonomy_name", "value": category["name"]},
             ],
         }
         wc_put(wc, f"products/{product['id']}", payload)
@@ -102,6 +123,10 @@ def run() -> None:
         "shipping_classes": [
             {"etsy_profile_id": key, "name": value.get("name"), "slug": value.get("slug"), "id": value.get("id")}
             for key, value in sorted(woo_classes.items())
+        ],
+        "categories": [
+            {"etsy_taxonomy_id": key, "name": value.get("name"), "slug": value.get("slug"), "id": value.get("id")}
+            for key, value in sorted(woo_categories.items())
         ],
         "products_updated": updated,
         "unmatched_listing_ids": unmatched,
