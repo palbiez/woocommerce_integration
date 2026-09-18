@@ -463,10 +463,13 @@ Mapping fuer Etsy Kategorien, Attribute, Versandprofile und Listing-Templates de
 Mapping zwischen WooCommerce Product/Variation IDs und Etsy Listing/Inventory IDs speichern.
 
 ## Akzeptanzkriterien
-- [ ] Datenbankschema ist definiert
-- [ ] IDs werden eindeutig gespeichert
-- [ ] SKUs sind validiert
-- [ ] Historie oder Sync-Log ist vorgesehen
+- [x] Datenbankschema ist definiert
+- [x] IDs werden eindeutig gespeichert
+- [x] SKUs sind validiert
+- [x] Historie oder Sync-Log ist vorgesehen
+
+## Ergebnis
+Mapping-Datenbank und Synchronisationsskript sind umgesetzt. Der reale Abgleich vom 18.09.2026 verknüpft 40 Etsy-SKUs mit WooCommerce-Produkten bzw. Varianten; alle Einträge stehen auf `linked`.
 "@
     },
     @{
