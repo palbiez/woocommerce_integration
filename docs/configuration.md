@@ -31,6 +31,7 @@ WebhookSecret = ...
 AppName = integration-woocommerce
 KeyString = ...
 Secret = ...
+WebhookSecret = ...
 ShopId =
 
 [Server]
@@ -57,6 +58,10 @@ Bei einer Etsy **Seller App** sind `KeyString` und `Secret` die App-Zugangsdaten
 aus `X-WC-Webhook-Signature` ueber den unveraenderten Request-Body und behandelt
 `X-WC-Webhook-ID` idempotent. Alternativ kann der Secret-Wert als Umgebungsvariable
 `WOOCOMMERCE_WEBHOOK_SECRET` gesetzt werden.
+
+Für Etsy-Webhooks wird das Signing Secret aus dem Etsy Webhook Portal als `EtsyAPI.WebhookSecret`
+hinterlegt. Der Service prüft damit den signierten Roh-Body, akzeptiert nur Zeitstempel innerhalb von
+fünf Minuten und verarbeitet eine `webhook-id` nur einmal.
 
 ## Reverse Proxy
 

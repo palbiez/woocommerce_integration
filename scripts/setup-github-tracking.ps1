@@ -385,14 +385,17 @@ Den dauerhaft erreichbaren Etsy-Webhook-Endpoint bereitstellen und im Etsy Webho
 Der OAuth-Callback aus M1-025 ist eine separate Route. Dieser Endpoint nimmt signierte HTTP-POST-Nachrichten entgegen.
 
 ## Akzeptanzkriterien
-- [ ] Oeffentliche HTTPS-URL fuer Etsy-Webhooks ist festgelegt und dokumentiert
+- [x] Oeffentliche HTTPS-URL fuer Etsy-Webhooks ist festgelegt und dokumentiert (`https://integration.mrs-daui.de/webhooks/etsy`)
 - [ ] Endpoint akzeptiert die aktuell benoetigten Events: `order.paid`, `order.canceled`, `order.shipped`, `order.delivered`
 - [ ] Etsy-Webhooks sind im Developer/Webhook Portal angelegt und der Status ist dokumentiert
 - [ ] Signing Secret liegt ausserhalb von Git und wird aus produktiver Konfiguration geladen
-- [ ] Signatur wird anhand des Raw-Request-Bodys und der Header `webhook-id`, `webhook-timestamp`, `webhook-signature` geprueft
-- [ ] Ungueltige oder zu alte Requests werden abgewiesen
-- [ ] Wiederholte Zustellungen werden ueber `webhook-id` idempotent behandelt
+- [x] Signatur wird anhand des Raw-Request-Bodys und der Header `webhook-id`, `webhook-timestamp`, `webhook-signature` geprueft
+- [x] Ungueltige oder zu alte Requests werden abgewiesen
+- [x] Wiederholte Zustellungen werden ueber `webhook-id` idempotent behandelt
 - [ ] Testevents aus dem Etsy Webhook Portal sind erfolgreich verarbeitet
+
+## Technischer Stand
+Der Endpoint ist öffentlich über Port 443 erreichbar. Die URL ohne `:8443` ist in Nginx eingerichtet. Vor produktiven Zustellungen muss das Etsy-Portal-Signing-Secret in `config.cfg` unter `EtsyAPI.WebhookSecret` hinterlegt werden.
 
 ## Abhaengigkeiten
 M2-035 stellt die technische Zustellung sicher; M3-030 verarbeitet die Etsy-Bestellung fachlich in WooCommerce.
@@ -517,10 +520,13 @@ Fuer neue Produkte einen kontrollierten Erstveroeffentlichungsprozess vorsehen, 
 Sollen Etsy-Preise identisch zu WooCommerce sein oder automatisch aufgeschlagen werden?
 
 ## Akzeptanzkriterien
-- [ ] Preisregel ist fachlich entschieden
-- [ ] Rundungsregeln sind definiert
+- [x] Preisregel ist fachlich entschieden
+- [x] Rundungsregeln sind definiert
 - [ ] Etsy-Gebuehren sind beruecksichtigt
 - [ ] Regel ist konfigurierbar umsetzbar
+
+## Entscheidung
+Vorlaeufig werden Etsy- und WooCommerce-Preise identisch uebernommen. Ein spaeterer Aufschlag bleibt als konfigurierbare Erweiterung offen; bei identischen Preisen ist keine zusaetzliche Rundung erforderlich.
 "@
     },
     @{

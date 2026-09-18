@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import binascii
 import hashlib
 import hmac
 import html
@@ -35,6 +36,7 @@ SNAPSHOT_FILE = DATA_DIR / "m1_etsy_snapshot" / "latest.json"
 WEBHOOK_DIR = DATA_DIR / "etsy_webhooks"
 WOOCOMMERCE_WEBHOOK_DIR = DATA_DIR / "woocommerce_webhooks"
 DEFAULT_SCOPES = ["listings_r", "listings_w", "shops_r", "profile_r", "transactions_r"]
+WEBHOOK_MAX_AGE_SECONDS = 300
 
 
 def code_challenge(verifier: str) -> str:
@@ -204,24 +206,50 @@ class EtsyService(BaseHTTPRequestHandler):
             self._send_json(413, {"error": "payload_too_large"})
             return
         raw = self.rfile.read(length)
+        webhook_id = self.headers.get("webhook-id", "").strip()
+        webhook_timestamp = self.headers.get("webhook-timestamp", "").strip()
+        webhook_signature = self.headers.get("webhook-signature", "").strip()
+        secret = self.server.config.get("EtsyAPI", "WebhookSecret", fallback="").strip()
+        if not secret:
+            self._send_json(503, {"error": "webhook_secret_not_configured"})
+            return
+        try:
+            timestamp_value = int(webhook_timestamp)
+            if abs(int(time.time()) - timestamp_value) > WEBHOOK_MAX_AGE_SECONDS:
+                raise ValueError("timestamp_outside_tolerance")
+            encoded_secret = secret.split("_", 1)[1] if secret.startswith("whsec_") else secret
+            secret_bytes = base64.b64decode(encoded_secret)
+            signed_content = f"{webhook_id}.{webhook_timestamp}.".encode("utf-8") + raw
+            expected_signature = base64.b64encode(
+                hmac.new(secret_bytes, signed_content, hashlib.sha256).digest()
+            ).decode("ascii")
+            signatures = [part.split(",", 1)[-1] for part in webhook_signature.split()]
+            if not webhook_id or expected_signature not in signatures:
+                raise ValueError("invalid_signature")
+        except (ValueError, TypeError, binascii.Error):
+            self._send_json(401, {"error": "invalid_webhook_signature"})
+            return
+        safe_id = "".join(ch for ch in webhook_id if ch.isalnum() or ch in "-_")[:100]
+        WEBHOOK_DIR.mkdir(parents=True, exist_ok=True)
+        target = WEBHOOK_DIR / f"{safe_id}.json"
+        if target.exists():
+            self._send_json(200, {"accepted": True, "duplicate": True, "webhook_id": webhook_id})
+            return
         try:
             payload = json.loads(raw.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError):
             self._send_json(400, {"error": "invalid_json"})
             return
-        event_id = self.headers.get("webhook-id") or secrets.token_hex(12)
-        safe_id = "".join(ch for ch in event_id if ch.isalnum() or ch in "-_")[:100] or secrets.token_hex(12)
-        WEBHOOK_DIR.mkdir(parents=True, exist_ok=True)
         write_json(
-            WEBHOOK_DIR / f"{time.strftime('%Y%m%d-%H%M%S')}-{safe_id}.json",
+            target,
             {
                 "received_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "webhook_id": event_id,
+                "webhook_id": webhook_id,
                 "event_type": self.headers.get("webhook-event-type"),
                 "payload": payload,
             },
         )
-        self._send_json(202, {"accepted": True, "webhook_id": event_id})
+        self._send_json(202, {"accepted": True, "webhook_id": webhook_id})
 
     def do_HEAD(self) -> None:  # noqa: N802
         if self.path == "/healthz":
